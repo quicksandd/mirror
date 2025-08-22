@@ -1,0 +1,1903 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ analysis.person_name|default:"Ваше Зеркало" }} — Википедия</title>
+    
+    <!-- Modern Wikipedia-style CSS based on current MediaWiki interface -->
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            *, ::before, ::after {
+                animation-delay: -0.01ms !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+                transition-duration: 0ms !important;
+            }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Lato, Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #222;
+            background: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Links */
+        a {
+            text-decoration: none;
+            color: #0645ad;
+            background: none;
+        }
+
+        a:visited {
+            color: #0b0080;
+        }
+
+        a:active {
+            color: #faa700;
+        }
+
+        a:hover, a:focus {
+            text-decoration: underline;
+        }
+
+        a.new {
+            color: #d03;
+        }
+
+        a.new:visited {
+            color: #a55858;
+        }
+
+        /* Headings */
+        .mw-heading, h1, h2, h3, h4, h5, h6 {
+            color: #000;
+            font-weight: bold;
+            margin: 0;
+            padding-top: 0.5em;
+            padding-bottom: 0.17em;
+            display: flow-root;
+            word-break: break-word;
+        }
+
+        .mw-heading1, h1, .mw-heading2, h2 {
+            margin-bottom: 0.6em;
+            border-bottom: 1px solid #aaa;
+        }
+
+        .mw-heading3, h3, .mw-heading4, h4, .mw-heading5, h5 {
+            margin-bottom: 0.3em;
+        }
+
+        .mw-heading1, h1 {
+            font-size: 188%;
+            font-weight: normal;
+        }
+
+        .mw-heading2, h2 {
+            font-size: 150%;
+            font-weight: normal;
+        }
+
+        .mw-heading3, h3 {
+            font-size: 128%;
+        }
+
+        .mw-heading4, h4 {
+            font-size: 116%;
+        }
+
+        .mw-heading5, h5 {
+            font-size: 108%;
+        }
+
+        .mw-heading6, h6 {
+            font-size: 100%;
+        }
+
+        /* Paragraphs and text */
+        p {
+            margin: 0.4em 0 0.5em 0;
+        }
+
+        /* Lists */
+        ul {
+            margin-top: 0.3em;
+            margin-bottom: 0;
+            margin-left: 1.6em;
+            margin-right: 0;
+            padding: 0;
+        }
+
+        ol {
+            margin-top: 0.3em;
+            margin-bottom: 0;
+            margin-left: 3.2em;
+            margin-right: 0;
+            padding: 0;
+            list-style-image: none;
+        }
+
+        li {
+            margin-bottom: 0.5em;
+            line-height: 1.5;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        /* Ensure lists don't get cramped */
+        .wiki-section ul li,
+        .wiki-section ol li {
+            display: block;
+            margin-bottom: 0.5em;
+            padding-bottom: 0.2em;
+        }
+
+        /* Fix for numbered lists */
+        .wiki-section ol {
+            counter-reset: item;
+        }
+
+        .wiki-section ol li {
+            display: block;
+            position: relative;
+            padding-left: 2em;
+        }
+
+        .wiki-section ol li:before {
+            content: counter(item) ". ";
+            counter-increment: item;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        /* Ensure bullet lists work properly */
+        .wiki-section ul li {
+            list-style-type: disc;
+            display: list-item;
+            position: static;
+            padding-left: 0;
+        }
+
+        .wiki-section ul li:before {
+            content: none;
+        }
+
+        /* Header navigation */
+        .wiki-header {
+            border-bottom: 1px solid #a2a9b1;
+            background: #f8f9fa;
+            padding: 0.5em 0;
+        }
+
+        .wiki-nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1em;
+            font-size: 0.875em;
+        }
+
+        .wiki-nav a {
+            color: #0645ad;
+            text-decoration: none;
+            margin-right: 1em;
+        }
+
+        .wiki-nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* Main container */
+        .wiki-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 1em;
+            padding: 1em;
+        }
+
+        /* Sidebar */
+        .wiki-sidebar {
+            width: 200px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 1em;
+            height: fit-content;
+            max-height: calc(100vh - 2em);
+            overflow-y: auto;
+        }
+
+        .wiki-tools {
+            background: #f8f9fa;
+            border: 1px solid #a2a9b1;
+            padding: 0.5em;
+            margin-bottom: 1em;
+        }
+
+        .wiki-tools h3 {
+            font-size: 0.875em;
+            font-weight: normal;
+            color: #222;
+            margin-bottom: 0.5em;
+            border-bottom: 1px solid #a2a9b1;
+            padding-bottom: 0.25em;
+        }
+
+        .wiki-tools ul {
+            list-style: none;
+            margin: 0;
+        }
+
+        .wiki-tools li {
+            margin: 0.25em 0;
+        }
+
+        .wiki-tools ul ul {
+            margin-left: 1em;
+            margin-top: 0.25em;
+            margin-bottom: 0.5em;
+        }
+
+        .wiki-tools ul ul li {
+            margin: 0.15em 0;
+            font-size: 0.9em;
+        }
+
+        .wiki-tools ul ul a {
+            color: #666;
+            font-size: 0.75em;
+        }
+
+        .wiki-tools a {
+            color: #0645ad;
+            text-decoration: none;
+            font-size: 0.8em;
+            transition: all 0.2s ease;
+            padding: 0.2em 0.4em 0.2em 0.6em;
+            border-radius: 3px;
+            position: relative;
+        }
+
+        .wiki-tools a.active {
+            background-color: #e6f3ff;
+            color: #0645ad;
+            font-weight: bold;
+            border-left: 3px solid #0645ad;
+        }
+
+        .wiki-tools a.active::before {
+            position: absolute;
+            left: 0.1em;
+            color: #0645ad;
+            font-weight: bold;
+        }
+
+        .wiki-tools a:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Main content */
+        .wiki-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Article title */
+        .wiki-title {
+            font-family: 'Linux Libertine', Georgia, Times, serif;
+            font-size: 2.3em;
+            font-weight: normal;
+            line-height: 1.3;
+            margin-bottom: 0.25em;
+            border-bottom: 3px solid #a2a9b1;
+            padding-bottom: 0.25em;
+        }
+
+        /* Subtitle */
+        .wiki-subtitle {
+            font-size: 0.875em;
+            color: #54595d;
+            margin-bottom: 1em;
+        }
+
+        /* Infobox */
+        .infobox {
+            float: right;
+            width: 300px;
+            background: #f8f9fa;
+            border: 1px solid #a2a9b1;
+            margin: 0 0 1em 1em;
+            font-size: 0.875em;
+        }
+
+        .infobox-title {
+            background: #ccccff;
+            text-align: center;
+            font-weight: bold;
+            padding: 0.5em;
+            border-bottom: 1px solid #a2a9b1;
+        }
+
+        .infobox-content {
+            padding: 0.5em;
+        }
+
+        .infobox-row {
+            display: flex;
+            margin-bottom: 0.5em;
+        }
+
+        .infobox-label {
+            font-weight: bold;
+            width: 40%;
+            padding-right: 0.5em;
+        }
+
+        .infobox-value {
+            width: 60%;
+        }
+
+        /* Table of Contents */
+        .toc, .toccolours {
+            background-color: #f8f9fa;
+            border: 1px solid #aaa;
+            padding: 5px;
+            font-size: 95%;
+        }
+
+        .toc {
+            display: table;
+            padding: 7px;
+            margin: 1em 0;
+        }
+
+        .toc h2 {
+            display: inline;
+            border: 0;
+            padding: 0;
+            font-size: 100%;
+            font-weight: bold;
+        }
+
+        .toc .toctitle {
+            text-align: center;
+            direction: ltr;
+        }
+
+        .toc ul {
+            list-style: none;
+            margin: 0.3em 0;
+            padding: 0;
+            text-align: start;
+        }
+
+        .toc ul ul {
+            margin: 0;
+            margin-left: 2em;
+            margin-right: 0;
+        }
+
+        .tocnumber, .toctext {
+            display: table-cell;
+            text-decoration: inherit;
+        }
+
+        .tocnumber {
+            color: #222;
+            padding-left: 0;
+            padding-right: 0.5em;
+        }
+
+        .toc a {
+            color: #0645ad;
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        /* Message boxes */
+        .mw-message-box {
+            background-color: #eee;
+            color: #000;
+            box-sizing: border-box;
+            margin-bottom: 16px;
+            border: 1px solid #aaa;
+            padding: 12px 24px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            overflow: hidden;
+        }
+
+        .mw-message-box > :only-child {
+            margin: 0;
+        }
+
+        .mw-message-box h2 {
+            color: inherit;
+            display: block;
+            border: 0;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .mw-message-box-error {
+            background-color: #fee7e6;
+            border-color: #d03;
+        }
+
+        .mw-message-box-warning {
+            background-color: #fef6e7;
+            border-color: #edab00;
+        }
+
+        .mw-message-box-success {
+            background-color: #d5fdf4;
+            border-color: #14866d;
+        }
+
+        /* Notice boxes */
+        .wiki-notice {
+            background-color: #fef6e7;
+            border: 1px solid #fc3;
+            padding: 1em;
+            margin: 1em 0;
+        }
+
+        .wiki-error {
+            background-color: #fee7e6;
+            border: 1px solid #d33;
+            color: #d33;
+        }
+
+        /* Categories */
+        .categories {
+            border-top: 1px solid #a2a9b1;
+            margin-top: 2em;
+            padding-top: 1em;
+            font-size: 0.875em;
+        }
+
+        .categories strong {
+            margin-right: 0.5em;
+        }
+
+        .categories a {
+            color: #0645ad;
+            text-decoration: none;
+            margin-right: 0.5em;
+        }
+
+        /* References */
+        .references {
+            font-size: 0.875em;
+            columns: 2;
+            column-gap: 2em;
+        }
+
+        .references ol {
+            margin-left: 1em;
+        }
+
+        /* Mobile responsiveness - Modern Wikipedia style */
+        @media (max-width: 768px) {
+            body {
+                font-size: 16px;
+                line-height: 1.5;
+                padding: 0;
+            }
+            
+            .wiki-header {
+                padding: 0.25em 0;
+                border-bottom: 1px solid #a2a9b1;
+            }
+            
+            .wiki-nav {
+                padding: 0 0.5em;
+                font-size: 0.9em;
+            }
+            
+            .wiki-nav a {
+                display: inline-block;
+                margin: 0.25em 0.5em 0.25em 0;
+                padding: 0.25em 0.5em;
+                background: #f8f9fa;
+                border: 1px solid #a2a9b1;
+                border-radius: 3px;
+                text-decoration: none;
+            }
+            
+            .wiki-nav a:hover {
+                background: #e6f3ff;
+                text-decoration: none;
+            }
+            
+            .wiki-container {
+                flex-direction: column;
+                padding: 0.5em;
+                gap: 0.5em;
+            }
+            
+            .wiki-sidebar {
+                width: 100%;
+                order: 2;
+                margin-top: 1em;
+                position: static;
+                max-height: none;
+                overflow-y: visible;
+            }
+            
+            .wiki-tools {
+                margin-bottom: 0.5em;
+                padding: 0.75em;
+            }
+            
+            .wiki-tools h3 {
+                font-size: 1em;
+                margin-bottom: 0.75em;
+            }
+            
+            .wiki-tools ul {
+                margin: 0;
+            }
+            
+            .wiki-tools li {
+                margin: 0.5em 0;
+            }
+            
+            .wiki-tools ul ul {
+                margin-left: 1em;
+                margin-top: 0.25em;
+                margin-bottom: 0.5em;
+            }
+            
+            .wiki-tools ul ul li {
+                margin: 0.25em 0;
+            }
+            
+            .wiki-tools ul ul a {
+                background: #f0f0f0;
+                border-color: #ccc;
+                font-size: 0.85em;
+                padding: 0.4em;
+            }
+            
+            .wiki-tools ul ul ul {
+                margin-left: 1em;
+                margin-top: 0.25em;
+                margin-bottom: 0.5em;
+            }
+            
+            .wiki-tools ul ul ul li {
+                margin: 0.2em 0;
+            }
+            
+            .wiki-tools ul ul ul a {
+                background: #f8f8f8;
+                border-color: #ddd;
+                font-size: 0.8em;
+                padding: 0.35em;
+            }
+            
+            .wiki-tools a {
+                display: block;
+                padding: 0.5em 0.5em 0.5em 1.2em;
+                background: #fff;
+                border: 1px solid #a2a9b1;
+                border-radius: 3px;
+                text-decoration: none;
+                font-size: 0.9em;
+                position: relative;
+            }
+            
+            .wiki-tools a:hover {
+                background: #e6f3ff;
+                text-decoration: none;
+            }
+            
+            .wiki-tools a.active {
+                background: #e6f3ff !important;
+                border-left: 3px solid #0645ad !important;
+                font-weight: bold;
+            }
+            
+            .wiki-tools a.active::before {
+                position: absolute;
+                left: 0.2em;
+                color: #0645ad;
+                font-weight: bold;
+            }
+            
+            .wiki-content {
+                order: 1;
+            }
+            
+            .wiki-title {
+                font-size: 1.8em;
+                line-height: 1.2;
+                margin-bottom: 0.5em;
+                padding-bottom: 0.5em;
+            }
+            
+            .wiki-subtitle {
+                font-size: 0.9em;
+                margin-bottom: 1em;
+            }
+            
+            .infobox {
+                float: none;
+                width: 100%;
+                margin: 1em 0;
+                font-size: 0.9em;
+            }
+            
+            .infobox-title {
+                padding: 0.75em;
+                font-size: 1em;
+            }
+            
+            .infobox-content {
+                padding: 0.75em;
+            }
+            
+            .infobox-row {
+                margin-bottom: 0.75em;
+            }
+            
+            .toc {
+                margin: 1em 0;
+                padding: 0.75em;
+                font-size: 0.9em;
+            }
+            
+            .toc h2 {
+                font-size: 1.1em;
+                margin-bottom: 0.5em;
+            }
+            
+            .toc ul {
+                margin: 0.5em 0;
+            }
+            
+            .toc li {
+                margin: 0.25em 0;
+            }
+            
+            .toc a {
+                display: block;
+                padding: 0.25em 0;
+                text-decoration: none;
+            }
+            
+            .toc a:hover {
+                background: #e6f3ff;
+                text-decoration: none;
+            }
+            
+            .tocnumber {
+                font-weight: bold;
+                margin-right: 0.5em;
+            }
+            
+            .wiki-section h2 {
+                font-size: 1.4em;
+                margin: 1.5em 0 0.75em 0;
+                padding-bottom: 0.5em;
+            }
+            
+            .wiki-section h3 {
+                font-size: 1.2em;
+                margin: 1.2em 0 0.5em 0;
+            }
+            
+            .wiki-section p {
+                margin: 0.75em 0;
+                line-height: 1.6;
+            }
+            
+            .wiki-section ul {
+                margin: 0.75em 0 0.75em 1.5em;
+            }
+            
+            .wiki-section li {
+                margin: 0.5em 0;
+                line-height: 1.5;
+            }
+            
+            .references {
+                columns: 1;
+                font-size: 0.85em;
+            }
+            
+            .categories {
+                margin-top: 2em;
+                padding-top: 1em;
+                font-size: 0.85em;
+            }
+            
+            .categories a {
+                display: inline-block;
+                margin: 0.25em 0.5em 0.25em 0;
+                padding: 0.25em 0.5em;
+                background: #f8f9fa;
+                border: 1px solid #a2a9b1;
+                border-radius: 3px;
+                text-decoration: none;
+            }
+            
+            .categories a:hover {
+                background: #e6f3ff;
+                text-decoration: none;
+            }
+            
+            .mw-message-box {
+                margin: 1em 0;
+                padding: 1em;
+                font-size: 0.9em;
+            }
+            
+            .mw-message-box h2 {
+                font-size: 1em;
+                margin-bottom: 0.5em;
+            }
+        }
+        
+        /* Small mobile devices */
+        @media (max-width: 480px) {
+            body {
+                font-size: 15px;
+            }
+            
+            .wiki-container {
+                padding: 0.25em;
+            }
+            
+            .wiki-nav {
+                padding: 0 0.25em;
+            }
+            
+            .wiki-nav a {
+                display: block;
+                margin: 0.25em 0;
+                text-align: center;
+            }
+            
+            .wiki-title {
+                font-size: 1.6em;
+            }
+            
+            .wiki-tools {
+                padding: 0.5em;
+            }
+            
+            .wiki-tools a {
+                padding: 0.75em;
+                font-size: 0.95em;
+            }
+            
+            .infobox {
+                font-size: 0.85em;
+            }
+            
+            .infobox-title {
+                padding: 0.5em;
+            }
+            
+            .infobox-content {
+                padding: 0.5em;
+            }
+            
+            .toc {
+                padding: 0.5em;
+                font-size: 0.85em;
+            }
+            
+            .wiki-section h2 {
+                font-size: 1.3em;
+            }
+            
+            .wiki-section h3 {
+                font-size: 1.1em;
+            }
+            
+            .wiki-section p {
+                margin: 0.5em 0;
+            }
+            
+            .wiki-section ul {
+                margin: 0.5em 0 0.5em 1.25em;
+            }
+            
+            .wiki-section li {
+                margin: 0.4em 0;
+            }
+            
+            .categories a {
+                display: block;
+                margin: 0.25em 0;
+                text-align: center;
+            }
+        }
+        
+        /* Touch-friendly improvements */
+        @media (max-width: 768px) {
+            /* Increase touch targets */
+            .wiki-nav a,
+            .wiki-tools a,
+            .toc a,
+            .categories a {
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            /* Improve scrolling */
+            .wiki-content {
+                overflow-x: hidden;
+            }
+            
+            /* Better spacing for touch */
+            .wiki-section h2,
+            .wiki-section h3 {
+                padding-top: 0.75em;
+            }
+            
+            /* Improve readability */
+            .wiki-section p {
+                text-align: left;
+                hyphens: auto;
+                word-wrap: break-word;
+            }
+            
+            /* Better list spacing */
+            .wiki-section ul,
+            .wiki-section ol {
+                padding-left: 1.5em;
+            }
+            
+            /* Improve infobox readability */
+            .infobox-row {
+                flex-direction: column;
+                margin-bottom: 1em;
+            }
+            
+            .infobox-label {
+                width: 100%;
+                padding-right: 0;
+                margin-bottom: 0.25em;
+                font-weight: bold;
+            }
+            
+            .infobox-value {
+                width: 100%;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .wiki-header,
+            .wiki-sidebar {
+                display: none;
+            }
+            
+            .wiki-container {
+                max-width: none;
+                padding: 0;
+            }
+            
+            .printfooter {
+                clear: both;
+                padding: 1em 0;
+            }
+            
+            .center {
+                text-align: center;
+            }
+            
+            a {
+                background: none !important;
+                padding: 0 !important;
+            }
+            
+            a, a.external, a.new, a.stub {
+                color: inherit !important;
+                text-decoration: inherit !important;
+            }
+        }
+
+        /* Float elements */
+        div.tright, div.floatright, table.floatright {
+            clear: right;
+            float: right;
+            margin: 0 0 0.5em 0.5em;
+        }
+
+        div.tleft, div.floatleft, table.floatleft {
+            float: left;
+            clear: left;
+            margin: 0 0.5em 0.5em 0;
+        }
+
+        @media all and (max-width: 639px) {
+            body.skin--responsive div.tright,
+            body.skin--responsive div.floatright,
+            body.skin--responsive table.floatright,
+            body.skin--responsive div.tleft,
+            body.skin--responsive div.floatleft,
+            body.skin--responsive table.floatleft {
+                clear: both;
+                float: none;
+            }
+        }
+
+        /* Edit sections (hidden for our use case) */
+        .mw-editsection {
+            display: none;
+        }
+
+        /* Site notice and user messages */
+        #siteNotice {
+            position: relative;
+            text-align: center;
+            margin: 0;
+        }
+
+        .usermessage {
+            background-color: #fef6e7;
+            border: 1px solid #edab00;
+            color: #000;
+            font-weight: bold;
+            margin: 2em 0 1em;
+            padding: 0.5em 1em;
+            vertical-align: middle;
+        }
+
+        /* Content subtitle */
+        #mw-content-subtitle, #contentSub2 {
+            font-size: 84%;
+            line-height: 1.2em;
+            margin: 0 0 1.4em 1em;
+            color: #555;
+            width: auto;
+        }
+
+        /* Horizontal rule */
+        hr {
+            height: 1px;
+            background-color: #aaa;
+            border: 0;
+            margin: 0.2em 0;
+        }
+
+        /* Images */
+        img {
+            border: 0;
+            vertical-align: middle;
+        }
+
+        /* Code and pre */
+        pre, code, tt, kbd, samp, .mw-code {
+            font-family: monospace, monospace;
+        }
+
+        pre, code, .mw-code {
+            background-color: #f8f9fa;
+            color: #000;
+            border: 1px solid #eee;
+        }
+
+        code {
+            border-radius: 0;
+            padding: 1px 4px;
+        }
+
+        pre, .mw-code {
+            padding: 1em;
+            white-space: pre-wrap;
+            overflow-x: hidden;
+            word-wrap: break-word;
+        }
+
+        /* Tables */
+        table {
+            font-size: 100%;
+        }
+
+        /* Forms */
+        fieldset {
+            border: 1px solid #2a4b8d;
+            margin: 1em 0 1em 0;
+            padding: 0 1em 1em;
+        }
+
+        legend {
+            padding: 0.5em;
+        }
+
+        form {
+            border: 0;
+            margin: 0;
+        }
+
+        textarea {
+            display: block;
+            box-sizing: border-box;
+            width: 100%;
+            border: 1px solid #aaa;
+            padding: 0.1em;
+        }
+
+        /* Section separators and visual hierarchy */
+        .wiki-section h1 {
+            border-bottom: 3px solid #a2a9b1;
+            padding-bottom: 0.5em;
+            margin-top: 2em;
+            margin-bottom: 1em;
+        }
+
+        .wiki-section h1:first-of-type {
+            margin-top: 0;
+        }
+
+        .wiki-section h4 {
+            color: #000;
+            font-size: 116%;
+            font-weight: bold;
+            margin: 0;
+            padding-top: 0.5em;
+            padding-bottom: 0.17em;
+            display: flow-root;
+            word-break: break-word;
+            margin-bottom: 0.3em;
+        }
+
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(to right, transparent, #a2a9b1, transparent);
+            margin: 2em 0;
+            border: none;
+        }
+
+        .subsection-divider {
+            height: 1px;
+            background: #e1e5e9;
+            margin: 1.5em 0;
+            border: none;
+        }
+
+        /* Utility classes */
+        .center {
+            width: 100%;
+            text-align: center;
+        }
+
+        *.center * {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .small {
+            font-size: 94%;
+        }
+
+        table.small {
+            font-size: 100%;
+        }
+
+        /* Modal styles */
+        .modal {
+            padding: 0;
+            border: none;
+            border-radius: 20px;
+            max-width: 720px;
+            width: 92vw;
+            background: transparent;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 18px 60px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            padding: 24px 24px 16px;
+            border-bottom: 1px solid rgba(17,19,21,0.10);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 800;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: rgba(17,19,21,0.56);
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        
+        .close-btn:hover {
+            background: #f7f8f9;
+            color: #111315;
+        }
+        
+        .modal-body {
+            padding: 24px;
+        }
+
+        /* Button styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 1px solid rgba(17,19,21,0.10);
+            background: #fff;
+            color: #111315;
+            font-weight: 800;
+            padding: 12px 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            cursor: pointer;
+            transition: .2s;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 36px rgba(0,0,0,0.08);
+        }
+        
+        .btn--primary {
+            border-color: transparent;
+            background: linear-gradient(135deg,#0f172a,#1f2937);
+            color: #fff;
+        }
+        
+        .btn--primary:hover {
+            box-shadow: 0 18px 60px rgba(0,0,0,0.12);
+        }
+    </style>
+</head>
+<body>
+    <!-- Wikipedia-style header -->
+    <div class="wiki-header">
+        <div class="wiki-nav">
+            <a href="/">← Вернуться к ЗЕРКАЛУ</a>
+            <a href="#" onclick="window.print()">Версия для печати</a>
+            <a href="#" onclick="downloadInsights()">Скачать</a>
+        </div>
+    </div>
+
+    <div class="wiki-container">
+        <!-- Sidebar -->
+        <div class="wiki-sidebar">
+            <div class="wiki-tools">
+                <h3>Навигация</h3>
+                <ul>
+                    {% if insights.processing_type == 'timeline' %}
+                        <li><a href="#psychological-profile">Психологический профиль</a></li>
+                        <ul>
+                            <li><a href="#communication">Стиль общения</a></li>
+                            <li><a href="#emotional">Эмоциональное состояние</a></li>
+                            <li><a href="#relationships">Отношения</a></li>
+                            <li><a href="#patterns">Паттерны поведения</a></li>
+                            <li><a href="#traits">Черты личности</a></li>
+                            <li><a href="#triggers">Эмоциональные триггеры</a></li>
+                            <li><a href="#coping">Стратегии совладания</a></li>
+                        </ul>
+                        <li><a href="#evolution-timeline">Эволюция личности</a></li>
+                        <ul>
+                            <li><a href="#personality-evolution">Общая эволюция</a></li>
+                            <li><a href="#key-transformations">Ключевые трансформации</a></li>
+                            <li><a href="#timeline-periods">Временные периоды</a></li>
+                            <ul>
+                                {% for period in insights.timeline_periods %}
+                                <li><a href="#period-{{ forloop.counter }}">{{ period.period_name }}</a></li>
+                                {% endfor %}
+                            </ul>
+                            <li><a href="#future-predictions">Прогнозы</a></li>
+                        </ul>
+                        <li><a href="#what-to-do">Что с этим всем делать</a></li>
+                        <ul>
+                            <li><a href="#growth">Области для роста</a></li>
+                            <li><a href="#recommendations">Рекомендации</a></li>
+                        </ul>
+                    {% else %}
+                        <li><a href="#personality">Психологический портрет</a></li>
+                        <li><a href="#communication">Стиль общения</a></li>
+                        <li><a href="#patterns">Паттерны поведения</a></li>
+                        <li><a href="#traits">Черты личности</a></li>
+                        <li><a href="#triggers">Эмоциональные триггеры</a></li>
+                        <li><a href="#coping">Стратегии совладания</a></li>
+                        <li><a href="#relationships">Отношения</a></li>
+                        <li><a href="#emotional">Эмоциональное состояние</a></li>
+                        <li><a href="#what-to-do">Что с этим всем делать</a></li>
+                        <ul>
+                            <li><a href="#growth">Области для роста</a></li>
+                            <li><a href="#recommendations">Рекомендации</a></li>
+                        </ul>
+                    {% endif %}
+                </ul>
+            </div>
+            
+            <div class="wiki-tools">
+                <h3>Инструменты</h3>
+                <ul>
+                    <li><a href="#" onclick="downloadInsights()">Скачать анализ</a></li>
+                    <li><a href="#" onclick="openDecryptModal()">Расшифровать данные</a></li>
+                    <li><a href="/mirror/">Новый анализ</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="wiki-content">
+            {% if status == 'processing' %}
+                <div class="mw-message-box mw-message-box-warning">
+                    <strong>Обработка данных...</strong><br>
+                    Анализ личности в процессе. Это может занять несколько минут. Обновите страницу для проверки статуса.
+                </div>
+            {% elif status == 'error' %}
+                <div class="mw-message-box mw-message-box-error">
+                    <strong>Ошибка обработки:</strong><br>
+                    {{ error_message }}
+                </div>
+            {% elif status == 'completed' and insights %}
+                <!-- Article title -->
+                <h1 class="wiki-title">{{ analysis.person_name|default:"Ваше Зеркало" }}</h1>
+                <div class="wiki-subtitle">Материал из ЗЕРКАЛА, системы психологического анализа</div>
+
+                <!-- Infobox -->
+                <div class="infobox">
+                    <div class="infobox-title">Психологический профиль</div>
+                    <div class="infobox-content">
+                        <div class="infobox-row">
+                            <div class="infobox-label">Имя:</div>
+                            <div class="infobox-value">{{ analysis.person_name|default:"Неизвестно" }}</div>
+                        </div>
+                        <div class="infobox-row">
+                            <div class="infobox-label">Дата анализа:</div>
+                            <div class="infobox-value">{{ analysis.created_at|date:"d.m.Y" }}</div>
+                        </div>
+                        <div class="infobox-row">
+                            <div class="infobox-label">UUID:</div>
+                            <div class="infobox-value" style="font-family: monospace; font-size: 0.8em;">{{ uuid }}</div>
+                        </div>
+                        <div class="infobox-row">
+                            <div class="infobox-label">Статус:</div>
+                            <div class="infobox-value">Анализ завершён</div>
+                        </div>
+                        {% if insights.processing_type == 'timeline' %}
+                        <div class="infobox-row">
+                            <div class="infobox-label">Тип анализа:</div>
+                            <div class="infobox-value">По временным периодам</div>
+                        </div>
+                        <div class="infobox-row">
+                            <div class="infobox-label">Сообщений:</div>
+                            <div class="infobox-value">{{ insights.total_messages }}</div>
+                        </div>
+                        <div class="infobox-row">
+                            <div class="infobox-label">Периодов:</div>
+                            <div class="infobox-value">{{ insights.number_of_periods }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if insights.processing_type == 'timeline' %}
+                <div class="wiki-notice" style="margin: 1em 0;">
+                    <strong>Анализ по временным периодам:</strong> Данный анализ был создан для большого файла ({{ insights.total_messages }} сообщений) и показывает эволюцию личности по {{ insights.number_of_periods }} временным периодам.
+                </div>
+                {% endif %}
+
+                <!-- Main article content -->
+                <div class="wiki-section">
+                    {% if insights.processing_type == 'timeline' %}
+                        <!-- Timeline Analysis Display -->
+                        <p><strong>{{ analysis.person_name|default:"Данный субъект" }}</strong> — {{ insights.main_characteristics }}</p>
+
+                        <!-- PSYCHOLOGICAL PROFILE SECTION -->
+                        <h1 id="psychological-profile">Психологический профиль</h1>
+
+                        <h2 id="communication">Стиль общения</h2>
+                        <p>{{ insights.communication_style }}</p>
+
+                        <h2 id="emotional">Эмоциональное состояние</h2>
+                        <p>{{ insights.emotional_state }}</p>
+
+                        <h2 id="relationships">Отношения с окружающими</h2>
+                        <p>{{ insights.relationship_patterns }}</p>
+
+                        <h2 id="patterns">Основные паттерны поведения</h2>
+                        <p>В ходе анализа были выявлены следующие устойчивые модели поведения:</p>
+                        <ul>
+                            {% for pattern in insights.main_patterns %}
+                            <li>{{ pattern }}</li>
+                            {% endfor %}
+                        </ul>
+
+                        <h2 id="traits">Черты личности</h2>
+                        <p>Доминирующие характеристики личности включают в себя:</p>
+                        <ul>
+                            {% for trait in insights.personality_traits %}
+                            <li>{{ trait }}</li>
+                            {% endfor %}
+                        </ul>
+
+                        <h2 id="triggers">Эмоциональные триггеры</h2>
+                        <p>Факторы, вызывающие наиболее сильные эмоциональные реакции:</p>
+                        <ul>
+                            {% for trigger in insights.emotional_triggers %}
+                            <li>{{ trigger }}</li>
+                            {% endfor %}
+                        </ul>
+
+                        <h2 id="coping">Стратегии совладания</h2>
+                        <p>Механизмы и подходы, используемые для преодоления трудных ситуаций:</p>
+                        <ul>
+                            {% for strategy in insights.coping_mechanisms %}
+                            <li>{{ strategy }}</li>
+                            {% endfor %}
+                        </ul>
+
+                        <!-- EVOLUTION AND TIMELINE SECTION -->
+                        <hr class="section-divider">
+                        <h1 id="evolution-timeline">Эволюция личности во времени</h1>
+                        <p>Анализ изменений и развития личности на протяжении всего периода наблюдения.</p>
+
+                        <h2 id="personality-evolution">Общая эволюция личности</h2>
+                        <p>{{ insights.overall_personality_evolution }}</p>
+
+                        <hr class="subsection-divider">
+
+                        <h2 id="key-transformations">Ключевые моменты трансформации</h2>
+                        <p>Критические периоды, когда происходили значительные изменения:</p>
+                        <ul>
+                            {% for transformation in insights.key_transformation_points %}
+                            <li>{{ transformation }}</li>
+                            {% endfor %}
+                        </ul>
+
+                        <hr class="subsection-divider">
+
+                        <h2 id="timeline-periods">Детальный анализ по временным периодам</h2>
+                        {% for period in insights.timeline_periods %}
+                        <h3 id="period-{{ forloop.counter }}">{{ period.period_name }} ({{ period.start_date }} - {{ period.end_date }})</h3>
+                        
+                        <p><strong>Личность в этот период:</strong> {{ period.personality_during_period }}</p>
+                        
+                        <p><strong>Эмоциональное состояние:</strong> {{ period.emotional_state }}</p>
+                        
+                        <p><strong>Ключевые события:</strong></p>
+                        <ul>
+                            {% for event in period.key_events %}
+                            <li>{{ event }}</li>
+                            {% endfor %}
+                        </ul>
+                        
+                        <p><strong>Паттерны общения:</strong></p>
+                        <ul>
+                            {% for pattern in period.communication_patterns %}
+                            <li>{{ pattern }}</li>
+                            {% endfor %}
+                        </ul>
+                        
+                        <p><strong>Развитие или регресс:</strong> {{ period.growth_or_regression }}</p>
+                        
+                        {% if not forloop.last %}
+                        <hr class="subsection-divider">
+                        {% endif %}
+                        {% endfor %}
+
+                        <hr class="subsection-divider">
+
+                        <h2 id="future-predictions">Прогнозы на будущее</h2>
+                        <p>Предсказания о будущем развитии на основе выявленных паттернов:</p>
+                        <ul>
+                            {% for prediction in insights.future_predictions %}
+                            <li>{{ prediction }}</li>
+                            {% endfor %}
+                        </ul>
+
+                        <!-- PRACTICAL RECOMMENDATIONS SECTION -->
+                        <hr class="section-divider">
+                        <h1 id="what-to-do">Что с этим всем делать</h1>
+                        <p>Практические рекомендации и области для развития на основе проведённого анализа.</p>
+
+                        <h2 id="growth">Области для роста</h2>
+                        <p>Сферы личностного развития, требующие особого внимания:</p>
+                        <ul>
+                            {% for area in insights.growth_areas %}
+                            <li>{{ area }}</li>
+                            {% endfor %}
+                        </ul>
+
+                        <h2 id="recommendations">Рекомендации</h2>
+                        <p>На основе проведённого анализа предлагаются следующие рекомендации:</p>
+                        <ul>
+                            {% for rec in insights.recommendations %}
+                            <li>{{ rec }}</li>
+                            {% endfor %}
+                        </ul>
+
+                    {% else %}
+                                                <!-- Standard Analysis Display -->
+                    <h2 id="personality">Психологический портрет</h2>
+                    <p>{{ insights.personality }}</p>
+
+                    <h2 id="communication">Стиль общения</h2>
+                    <p>{{ insights.communication_style }}</p>
+
+                    <h2 id="patterns">Основные паттерны поведения</h2>
+                    <p>В ходе анализа были выявлены следующие устойчивые модели поведения:</p>
+                    <ul>
+                        {% for pattern in insights.main_patterns %}
+                        <li>{{ pattern }}</li>
+                        {% endfor %}
+                    </ul>
+
+                    <h2 id="traits">Черты личности</h2>
+                    <p>Доминирующие характеристики личности включают в себя:</p>
+                    <ul>
+                        {% for trait in insights.personality_traits %}
+                        <li>{{ trait }}</li>
+                        {% endfor %}
+                    </ul>
+
+                    <h2 id="triggers">Эмоциональные триггеры</h2>
+                    <p>Факторы, вызывающие наиболее сильные эмоциональные реакции:</p>
+                    <ul>
+                        {% for trigger in insights.emotional_triggers %}
+                        <li>{{ trigger }}</li>
+                        {% endfor %}
+                    </ul>
+
+                    <h2 id="coping">Стратегии совладания</h2>
+                    <p>Механизмы и подходы, используемые для преодоления трудных ситуаций:</p>
+                    <ul>
+                        {% for strategy in insights.coping_mechanisms %}
+                        <li>{{ strategy }}</li>
+                        {% endfor %}
+                    </ul>
+
+                    <h2 id="relationships">Отношения с окружающими</h2>
+                    <p>{{ insights.relationship_patterns }}</p>
+
+                    <h2 id="emotional">Эмоциональное состояние</h2>
+                    <p>{{ insights.emotional_state }}</p>
+
+                    <hr class="section-divider">
+                    <h1 id="what-to-do">Что с этим всем делать</h1>
+                    <p>Практические рекомендации и области для развития на основе проведённого анализа.</p>
+
+                    <h2 id="growth">Области для роста</h2>
+                    <p>Сферы личностного развития, требующие особого внимания:</p>
+                    <ul>
+                        {% for area in insights.growth_areas %}
+                        <li>{{ area }}</li>
+                        {% endfor %}
+                    </ul>
+
+                    <h2 id="recommendations">Рекомендации</h2>
+                    <p>На основе проведённого анализа предлагаются следующие рекомендации:</p>
+                    <ul>
+                        {% for rec in insights.recommendations %}
+                        <li>{{ rec }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    <h2>Примечания</h2>
+                    <div class="references">
+                        <ol>
+                            <li>Анализ проведён системой ЗЕРКАЛО на основе текстовых данных</li>
+                            <li>Результаты носят исследовательский характер</li>
+                            <li>Для получения профессиональной психологической помощи рекомендуется обращение к специалистам</li>
+                        </ol>
+                    </div>
+
+                    <h2>См. также</h2>
+                    <ul>
+                        <li><a href="/mirror/">ЗЕРКАЛО — главная страница</a></li>
+                        <li><a href="/mirror/export-guide/">Инструкция по экспорту данных</a></li>
+                    </ul>
+                </div>
+
+                <!-- Categories -->
+                <div class="categories">
+                    <strong>Категории:</strong>
+                    <a href="#">Психологический анализ</a>
+                    <a href="#">Анализ личности</a>
+                    <a href="#">ЗЕРКАЛО</a>
+                    <a href="#">{{ analysis.created_at|date:"Y" }}</a>
+                </div>
+
+            {% else %}
+                <div class="mw-message-box mw-message-box-error">
+                    <strong>Данные не найдены</strong><br>
+                    Анализ не был завершён или данные недоступны.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- DECRYPT MODAL -->
+    <dialog id="decryptModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Введите пароль для расшифровки</h3>
+                <button onclick="closeDecryptModal()" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom:20px">
+                    <p style="color:var(--sub);margin-bottom:16px">
+                        Введите пароль для расшифровки и просмотра ваших данных анализа.
+                    </p>
+                </div>
+                <div style="margin-bottom:20px">
+                    <label for="decryptPassword" style="display:block;font-weight:800;margin-bottom:8px">Пароль:</label>
+                    <input type="password" id="decryptPassword" placeholder="Введите ваш пароль" style="width:100%;padding:12px;border:1px solid var(--line);border-radius:var(--radius-md);font-size:16px">
+                </div>
+                <div style="display:flex;gap:12px;justify-content:flex-end">
+                    <button class="btn" onclick="closeDecryptModal()">Отмена</button>
+                    <button class="btn btn--primary" onclick="decryptData()">Расшифровать</button>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/libsodium-wrappers@0.7.11/dist/libsodium-wrappers.min.js"></script>
+    <script src="{% static 'mirror/crypto.js' %}"></script>
+    <script>
+        // Modal functions
+        function openDecryptModal(){
+            const $decryptModal = document.getElementById('decryptModal');
+            if(!$decryptModal) return;
+            if ($decryptModal.showModal) $decryptModal.showModal(); else $decryptModal.setAttribute('open','');
+        }
+        
+        function closeDecryptModal(){
+            const $decryptModal = document.getElementById('decryptModal');
+            if(!$decryptModal) return;
+            if ($decryptModal.close) $decryptModal.close(); else $decryptModal.removeAttribute('open');
+        }
+
+        function displayDecryptedData(analysisData) {
+            // Display decrypted data in a modal or alert
+            console.log('Расшифрованные данные анализа:', analysisData);
+            
+            let message = 'Данные успешно расшифрованы!\n\n';
+            message += 'Имя: ' + (analysisData.person_name || 'Не указано') + '\n';
+            message += 'Количество сообщений: ' + (analysisData.chat ? analysisData.chat.length : 0) + '\n';
+            message += 'Сохранять данные: ' + (analysisData.retain ? 'Да' : 'Нет') + '\n\n';
+            message += 'Подробности в консоли браузера (F12)';
+            
+            alert(message);
+        }
+
+        // Function to clean list items by removing enumeration and extra whitespace
+        function cleanListItems() {
+            const lists = document.querySelectorAll('ul, ol');
+            
+            lists.forEach((list, listIndex) => {
+                const items = list.querySelectorAll('li');
+                
+                items.forEach((item, itemIndex) => {
+                    let text = item.textContent || item.innerText;
+                    const originalText = text;
+                    
+                    // Only remove very specific enumeration patterns that are clearly unwanted
+                    // Don't remove single letters or numbers that might be part of the content
+                    text = text.replace(/^[\d]+\.\s+/, ''); // Remove "1. ", "2. " etc. (with space after)
+                    text = text.replace(/^[•·▪▫]\s+/, ''); // Remove bullet points (with space after)
+                    text = text.replace(/^[-–—]\s+/, ''); // Remove dashes (with space after)
+                    text = text.replace(/^[a-zA-Z]\)\s+/, ''); // Remove "a) ", "b) " etc. (with space after)
+                    text = text.replace(/^[а-яА-Я]\)\s+/, ''); // Remove "а) ", "б) " etc. (with space after)
+                    text = text.replace(/^[\d]+\)\s+/, ''); // Remove "1) ", "2) " etc. (with space after)
+                    text = text.replace(/^[a-zA-Z]\.\s+/, ''); // Remove "a. ", "b. " etc. (with space after)
+                    text = text.replace(/^[а-яА-Я]\.\s+/, ''); // Remove "а. ", "б. " etc. (with space after)
+                    
+                    // Clean up extra whitespace
+                    text = text.replace(/^\s+|\s+$/g, ''); // Trim whitespace
+                    text = text.replace(/\s+/g, ' '); // Normalize multiple spaces to single space
+                    
+                    // Only update if the text actually changed and is not empty
+                    if (originalText !== text && text.trim().length > 0) {
+                        item.textContent = text;
+                    }
+                });
+            });
+        }
+
+        // Clean lists when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            cleanListItems();
+        });
+
+        // Also clean after a short delay to catch any dynamically loaded content
+        setTimeout(cleanListItems, 100);
+        setTimeout(cleanListItems, 500);
+        setTimeout(cleanListItems, 1000);
+
+        function downloadInsights() {
+            try {
+                // Clean lists before generating download content
+                cleanListItems();
+                
+                const name = '{{ analysis.person_name|default:"anonymous" }}';
+                
+                let content = '{{ analysis.person_name|default:"Ваше Зеркало" }} — Википедия\n';
+                content += '='.repeat(80) + '\n\n';
+                content += 'ПСИХОЛОГИЧЕСКИЙ АНАЛИЗ\n';
+                content += 'Дата: ' + new Date().toLocaleDateString('ru-RU') + '\n';
+                content += 'UUID: {{ uuid }}\n\n';
+                
+                {% if insights %}
+                    {% if insights.processing_type == 'timeline' %}
+                        content += 'АНАЛИЗ ПО ВРЕМЕННЫМ ПЕРИОДАМ\n';
+                        content += 'Всего сообщений: {{ insights.total_messages }}\n';
+                        content += 'Количество периодов: {{ insights.number_of_periods }}\n\n';
+                        
+                        content += 'ПСИХОЛОГИЧЕСКИЙ ПРОФИЛЬ\n';
+                        content += '='.repeat(50) + '\n\n';
+                        
+                        content += 'ОСНОВНЫЕ ХАРАКТЕРИСТИКИ\n';
+                        content += '{{ insights.main_characteristics }}\n\n';
+                        
+                        content += 'СТИЛЬ ОБЩЕНИЯ\n';
+                        content += '{{ insights.communication_style }}\n\n';
+                        
+                        content += 'ЭМОЦИОНАЛЬНОЕ СОСТОЯНИЕ\n';
+                        content += '{{ insights.emotional_state }}\n\n';
+                        
+                        content += 'ОТНОШЕНИЯ С ОКРУЖАЮЩИМИ\n';
+                        content += '{{ insights.relationship_patterns }}\n\n';
+                        
+                        content += 'ОСНОВНЫЕ ПАТТЕРНЫ ПОВЕДЕНИЯ\n';
+                        {% for pattern in insights.main_patterns %}
+                        content += '• {{ pattern }}\n';
+                        {% endfor %}
+                        content += '\n';
+                        
+                        content += 'ЧЕРТЫ ЛИЧНОСТИ\n';
+                        {% for trait in insights.personality_traits %}
+                        content += '• {{ trait }}\n';
+                        {% endfor %}
+                        content += '\n';
+                        
+                        content += 'ЭМОЦИОНАЛЬНЫЕ ТРИГГЕРЫ\n';
+                        {% for trigger in insights.emotional_triggers %}
+                        content += '• {{ trigger }}\n';
+                        {% endfor %}
+                        content += '\n';
+                        
+                        content += 'СТРАТЕГИИ СОВЛАДАНИЯ\n';
+                        {% for strategy in insights.coping_mechanisms %}
+                        content += '• {{ strategy }}\n';
+                        {% endfor %}
+                        content += '\n';
+                        
+                        content += 'ОБЛАСТИ ДЛЯ РОСТА\n';
+                        {% for area in insights.growth_areas %}
+                        content += '• {{ area }}\n';
+                        {% endfor %}
+                        content += '\n';
+                        
+                        content += 'РЕКОМЕНДАЦИИ\n';
+                        {% for rec in insights.recommendations %}
+                        content += '• {{ rec }}\n';
+                        {% endfor %}
+                        content += '\n';
+                        
+                        content += '\nЭВОЛЮЦИЯ ЛИЧНОСТИ ВО ВРЕМЕНИ\n';
+                        content += '='.repeat(50) + '\n\n';
+                        
+                        content += 'ОБЩАЯ ЭВОЛЮЦИЯ ЛИЧНОСТИ\n';
+                        content += '{{ insights.overall_personality_evolution }}\n\n';
+                        
+
+                        
+                        content += 'КЛЮЧЕВЫЕ МОМЕНТЫ ТРАНСФОРМАЦИИ\n';
+                        {% for transformation in insights.key_transformation_points %}
+                        content += '• {{ transformation }}\n';
+                        {% endfor %}
+                        content += '\n';
+                        
+                        content += 'АНАЛИЗ ПО ВРЕМЕННЫМ ПЕРИОДАМ\n';
+                        {% for period in insights.timeline_periods %}
+                        content += '\n{{ period.period_name }} ({{ period.start_date }} - {{ period.end_date }})\n';
+                        content += 'Личность в этот период: {{ period.personality_during_period }}\n';
+                        content += 'Эмоциональное состояние: {{ period.emotional_state }}\n';
+                        content += 'Ключевые события:\n';
+                        {% for event in period.key_events %}
+                        content += '  • {{ event }}\n';
+                        {% endfor %}
+                        content += 'Паттерны общения:\n';
+                        {% for pattern in period.communication_patterns %}
+                        content += '  • {{ pattern }}\n';
+                        {% endfor %}
+                        content += 'Развитие или регресс: {{ period.growth_or_regression }}\n';
+                        {% endfor %}
+                        content += '\n';
+                        
+                        content += 'ПРОГНОЗЫ НА БУДУЩЕЕ\n';
+                        {% for prediction in insights.future_predictions %}
+                        content += '• {{ prediction }}\n';
+                        {% endfor %}
+                        content += '\n';
+                        
+                    {% else %}
+                content += 'ПСИХОЛОГИЧЕСКИЙ ПОРТРЕТ\n';
+                content += '{{ insights.personality }}\n\n';
+                
+                content += 'СТИЛЬ ОБЩЕНИЯ\n';
+                content += '{{ insights.communication_style }}\n\n';
+                
+                content += 'ЭМОЦИОНАЛЬНОЕ СОСТОЯНИЕ\n';
+                content += '{{ insights.emotional_state }}\n\n';
+                
+                content += 'ОТНОШЕНИЯ С ОКРУЖАЮЩИМИ\n';
+                content += '{{ insights.relationship_patterns }}\n\n';
+                
+                content += 'ОСНОВНЫЕ ПАТТЕРНЫ ПОВЕДЕНИЯ\n';
+                {% for pattern in insights.main_patterns %}
+                content += '• {{ pattern }}\n';
+                {% endfor %}
+                content += '\n';
+                
+                content += 'ЧЕРТЫ ЛИЧНОСТИ\n';
+                {% for trait in insights.personality_traits %}
+                content += '• {{ trait }}\n';
+                {% endfor %}
+                content += '\n';
+                
+                content += 'ЭМОЦИОНАЛЬНЫЕ ТРИГГЕРЫ\n';
+                {% for trigger in insights.emotional_triggers %}
+                content += '• {{ trigger }}\n';
+                {% endfor %}
+                content += '\n';
+                
+                content += 'СТРАТЕГИИ СОВЛАДАНИЯ\n';
+                {% for strategy in insights.coping_mechanisms %}
+                content += '• {{ strategy }}\n';
+                {% endfor %}
+                content += '\n';
+                
+                content += 'ОБЛАСТИ ДЛЯ РОСТА\n';
+                {% for area in insights.growth_areas %}
+                content += '• {{ area }}\n';
+                {% endfor %}
+                content += '\n';
+                
+                content += 'РЕКОМЕНДАЦИИ\n';
+                {% for rec in insights.recommendations %}
+                content += '• {{ rec }}\n';
+                {% endfor %}
+                content += '\n';
+                    {% endif %}
+                {% endif %}
+                
+                content += '='.repeat(80) + '\n';
+                content += 'Анализ создан системой ЗЕРКАЛО\n';
+
+                // Create and download file
+                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = name.replace(/\s+/g, '_').toLowerCase() + '_wiki_analysis.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+            } catch (error) {
+                console.error('Error downloading insights:', error);
+                alert('Ошибка при скачивании файла');
+            }
+        }
+
+        // Auto-refresh if still processing
+        {% if status == 'processing' %}
+            setTimeout(() => {
+                window.location.reload();
+            }, 10000);
+        {% endif %}
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Simple and reliable TOC highlighting
+        function highlightCurrentSection() {
+            // Get all section headers
+            const headers = document.querySelectorAll('h1, h2, h3');
+            const tocLinks = document.querySelectorAll('.wiki-tools a[href^="#"]');
+            
+            // Remove all active classes
+            tocLinks.forEach(link => link.classList.remove('active'));
+            
+            // Find which section we're currently viewing
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            let currentSection = null;
+            
+            // Find the section that's currently in view
+            for (let i = 0; i < headers.length; i++) {
+                const header = headers[i];
+                const headerTop = header.offsetTop;
+                
+                // If we've scrolled past this header, it's a candidate
+                if (scrollTop >= headerTop - 100) {
+                    currentSection = header;
+                } else {
+                    // If we haven't scrolled to this header yet, stop looking
+                    break;
+                }
+            }
+            
+            // Highlight the corresponding TOC link
+            if (currentSection && currentSection.id) {
+                const activeLink = document.querySelector('.wiki-tools a[href="#' + currentSection.id + '"]');
+                if (activeLink) {
+                    activeLink.classList.add('active');
+                }
+            }
+        }
+
+        // Add scroll listener
+        window.addEventListener('scroll', highlightCurrentSection);
+        
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', highlightCurrentSection);
+        
+        // Also run after a short delay
+        setTimeout(highlightCurrentSection, 500);
+        
+
+    </script>
+</body>
+</html> 

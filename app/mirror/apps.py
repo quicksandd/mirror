@@ -1,0 +1,7 @@
+from django.apps import AppConfig
+
+
+class MirrorConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'app.mirror'
+    verbose_name = 'Mirror Analysis'

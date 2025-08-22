@@ -1,0 +1,92 @@
+# Python
+__pycache__/
+*.py[cod]
+.cache
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+env/
+.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Local development
+*.sqlite3
+db.sqlite3
+
+# Heroku
+.DS_Store
+
+# Environment variables
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Logs
+*.log
+logs/
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Project specific
+*.db
+
+# Direnv
+.direnv/
+
+# Nix
+result
+
+
+# Static files
+staticfiles/
+patient_avatars/
+
+*.sql
+
+# Vite UI app artifacts
+app/mirror/ui_server/node_modules/
+app/mirror/ui_server/dist/
+app/mirror/ui_server/.vite/
+app/mirror/ui_server/.eslintcache
+app/mirror/ui_server/npm-debug.log*
+app/mirror/ui_server/yarn-debug.log*
+app/mirror/ui_server/yarn-error.log*
+app/mirror/ui_server/pnpm-debug.log*

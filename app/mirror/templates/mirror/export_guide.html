@@ -1,0 +1,330 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ЗЕРКАЛО - ИНСТРУКЦИЯ ПО ЭКСПОРТУ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', 'DejaVu Serif', 'Liberation Serif', serif;
+            background: #ffffff;
+            color: #000000;
+            min-height: 100vh;
+            padding: 0.25in;
+            line-height: 1.4;
+            font-size: 11pt;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 0.25in;
+            left: 0.25in;
+            background: #ffffff;
+            color: #000000;
+            padding: 0.125in 0.25in;
+            border: 2px solid #000000;
+            font-size: 10pt;
+            font-family: 'Times New Roman', 'DejaVu Serif', 'Liberation Serif', serif;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 0.1em;
+            z-index: 10;
+        }
+
+        .back-btn:hover {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 6in;
+            margin: 0.5in auto 0 auto;
+        }
+
+        .title {
+            font-size: 16pt;
+            font-weight: bold;
+            margin-bottom: 0.25in;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .warning {
+            border: 2px solid #000000;
+            padding: 0.25in;
+            margin-bottom: 0.5in;
+            background: #f8f8f8;
+        }
+
+        .warning-text {
+            font-size: 11pt;
+            font-weight: bold;
+        }
+
+
+
+        .link {
+            color: #000000;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+
+        .link:hover {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .note {
+            background: #f0f0f0;
+            padding: 0.25in;
+            margin: 0.25in 0;
+            border-left: 4px solid #000000;
+            font-size: 11pt;
+        }
+
+        .continue-btn {
+            background: #ffffff;
+            color: #000000;
+            padding: 0.2in 0.4in;
+            border: 2px solid #000000;
+            font-size: 11pt;
+            font-family: 'Times New Roman', 'DejaVu Serif', 'Liberation Serif', serif;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 0.1em;
+            margin-top: 0.25in;
+        }
+
+        .continue-btn:hover {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .platform-title {
+            font-size: 14pt;
+            font-weight: bold;
+            margin: 0.5in 0 0.25in 0;
+            text-transform: uppercase;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 0.125in;
+        }
+
+        .tabs {
+            display: flex;
+            margin: 0.375in 0 0.25in 0;
+            gap: 0.125in;
+            justify-content: center;
+        }
+
+        .tab {
+            background: #ffffff;
+            color: #666666;
+            padding: 0.125in 0.375in;
+            border: 1px solid #cccccc;
+            font-size: 10pt;
+            font-family: 'Times New Roman', 'DejaVu Serif', 'Liberation Serif', serif;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+            border-radius: 2px;
+        }
+
+        .tab.active {
+            background: #000000;
+            color: #ffffff;
+            border-color: #000000;
+        }
+
+        .tab:hover {
+            background: #f8f8f8;
+            border-color: #999999;
+        }
+
+        .tab.active:hover {
+            background: #000000;
+        }
+
+        .tab-content {
+            display: none;
+            margin-top: 0.25in;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .step {
+            margin-bottom: 0.25in;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.125in;
+        }
+
+        .step-number {
+            font-weight: bold;
+            font-size: 12pt;
+            color: #000000;
+            min-width: 0.375in;
+        }
+
+        .step-text {
+            flex: 1;
+            font-size: 10pt;
+            line-height: 1.3;
+        }
+
+        .note {
+            background: #f8f8f8;
+            padding: 0.25in;
+            margin: 0.25in 0;
+            border-left: 3px solid #000000;
+            font-size: 9pt;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0.25in;
+                font-size: 11pt;
+            }
+            
+            .container {
+                max-width: none;
+                margin-top: 0.5in;
+            }
+            
+            .title {
+                font-size: 16pt;
+            }
+            
+            .back-btn {
+                position: static;
+                margin-bottom: 0.5in;
+                display: block;
+                width: fit-content;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="/mirror/" class="back-btn">← НАЗАД</a>
+    
+    <div class="container">
+        <div class="title">Как экспортировать чат</div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('whatsapp')">📱 WhatsApp</div>
+            <div class="tab" onclick="switchTab('telegram')">📱 Telegram</div>
+        </div>
+
+        <div id="whatsapp-tab" class="tab-content active">
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-text">Откройте чат в WhatsApp</div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-text">Нажмите на название чата сверху</div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-text">Выберите "Экспорт чата"</div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-text">Отключите медиафайлы → "Экспорт"</div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-text">Сохраните .txt файл и загрузите сюда</div>
+                </div>
+            </div>
+
+            <div class="note">
+                Экспорт может занять несколько минут для больших чатов
+            </div>
+        </div>
+
+        <div id="telegram-tab" class="tab-content">
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-text">Скачайте <a href="https://desktop.telegram.org/?setln=en" target="_blank" class="link">Telegram Desktop BETA</a></div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-text">Войдите в аккаунт и откройте чат</div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-text">Три точки (⋮) → "Export chat history"</div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-text">Формат: <strong>JSON</strong>, отключите медиафайлы</div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-text">"Export" → загрузите JSON файл сюда</div>
+                </div>
+            </div>
+
+            <div class="note">
+                Только Telegram Desktop BETA поддерживает экспорт. При первом экспорте Telegram может попросить подтвердить из другого аккаунта — это нормально.
+            </div>
+        </div>
+
+
+
+        <a href="/mirror/" class="continue-btn">ПЕРЕЙТИ К АНАЛИЗУ</a>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html> 

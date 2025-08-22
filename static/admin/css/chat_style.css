@@ -1,0 +1,95 @@
+/* Chat styling for admin interface */
+.chat-message {
+    margin: 15px 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-message-user {
+    align-self: flex-end;
+    max-width: 80%;
+}
+
+.chat-message-bot {
+    align-self: flex-start;
+    max-width: 80%;
+}
+
+.chat-bubble-user {
+    background-color: #e6f7ff;
+    padding: 10px 15px;
+    border-radius: 15px 15px 0 15px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.chat-bubble-bot {
+    background-color: #f9f0ff;
+    padding: 10px 15px;
+    border-radius: 15px 15px 15px 0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.chat-username {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.chat-username-user {
+    color: #1890ff;
+    align-self: flex-end;
+}
+
+.chat-username-bot {
+    color: #722ed1;
+    align-self: flex-start;
+}
+
+.chat-commands {
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+
+.chat-command {
+    background-color: #f6ffed;
+    padding: 5px 10px;
+    border-radius: 8px;
+    margin-bottom: 3px;
+    display: inline-block;
+}
+
+.chat-command-damage {
+    background-color: #fff1f0;
+}
+
+.command-type {
+    color: #52c41a;
+    font-weight: bold;
+}
+
+.command-type-damage {
+    color: #f5222d;
+}
+
+/* Override admin styles */
+.stacked .field-message_display {
+    overflow: visible !important;
+}
+
+.aligned .form-row {
+    overflow: visible !important;
+}
+
+/* Make sure the chat container has proper spacing */
+.inline-related {
+    margin-bottom: 20px !important;
+}
+
+/* Hide unnecessary admin chrome */
+.inline-related h3 {
+    display: none;
+}
+
+.inline-related fieldset {
+    border: none !important;
+    padding: 0 !important;
+} 

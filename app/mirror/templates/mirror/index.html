@@ -1,0 +1,1007 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MIRROR</title>
+  <meta name="description" content="Экспортируйте чат, загрузите его безопасно и получите приватную, похожую на Википедию страницу-биографию на основе ваших собственных слов. Открытый код. Без трекинга. Контроль у вас." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/ui/favicon/favicon-32x32.png?v=1">
+  <style>
+    :root {
+      --ink:#111315;
+      --sub:rgba(17,19,21,.72);
+      --muted:rgba(17,19,21,.56);
+      --line:rgba(17,19,21,.10);
+      --bg:#fff;
+      --bg-soft:#f7f8f9;
+      --brand:#0f172a;
+      --brand-2:#1f2937;
+      --ok:#059669;
+      --ok-2:#10b981;
+      --radius-xl:20px;
+      --radius-lg:16px;
+      --radius-md:12px;
+      --shadow-1:0 2px 12px rgba(0,0,0,.06);
+      --shadow-2:0 8px 36px rgba(0,0,0,.08);
+      --shadow-3:0 18px 60px rgba(0,0,0,.12);
+      --width:1120px;
+      --width-wide:1280px;
+      --ring:#2563eb;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation-duration:.01ms!important}}
+    body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+
+    /* Focus */
+    :focus-visible{outline:2px solid var(--ring);outline-offset:2px;border-radius:6px}
+
+    /* NAV */
+    .nav{position:sticky;top:0;z-index:40;backdrop-filter:blur(8px);background:rgba(255,255,255,.86);border-bottom:1px solid var(--line)}
+    .nav__in{max-width:var(--width);margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:16px;justify-content:space-between}
+    .brand{font-weight:800;letter-spacing:-.02em}
+    .nav__links{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+    .nav a{color:var(--ink);text-decoration:none;font-weight:700;opacity:.9}
+    .nav a:hover{opacity:1}
+    .lang-switch{display:inline-flex;gap:6px;align-items:center}
+    .lang-switch .btn{padding:6px 10px;font-size:13px}
+
+    /* BUTTONS */
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:#fff;color:var(--ink);font-weight:800;padding:12px 16px;border-radius:var(--radius-md);box-shadow:var(--shadow-1);cursor:pointer;transition:.2s;text-decoration:none}
+    .btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-2)}
+    .btn--primary{border-color:transparent;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff}
+    .btn--primary:hover{box-shadow:var(--shadow-3)}
+    .btn--danger{border-color:#fecaca;color:#dc2626;background:#fff}
+
+    /* LAYOUT */
+    .container{max-width:var(--width);margin:0 auto;padding:0 20px}
+    .container-wide{max-width:var(--width-wide);margin:0 auto;padding:0 20px}
+    .section{padding:64px 0}
+    .section--soft{background:var(--bg-soft)}
+
+    .h1{font-size:clamp(32px,6vw,54px);line-height:1.06;letter-spacing:-.02em;margin:14px 0 10px}
+    .h2{font-size:clamp(24px,4.5vw,40px);line-height:1.15;margin:4px 0 18px;letter-spacing:-.02em;text-align:center}
+    .lead{font-size:18px;color:var(--sub)}
+    .sub{color:var(--sub);max-width:68ch}
+    .caption{font-size:13px;color:var(--muted)}
+
+    .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius-xl);padding:22px;box-shadow:var(--shadow-1)}
+
+    /* HERO */
+    .hero{padding:72px 0 32px}
+    .hero__grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+    .privacy-note{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg-soft);color:var(--sub);font-weight:700}
+    .hero__cta{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap}
+    .mock{position:relative;min-height:420px;display:flex;align-items:center;justify-content:center}
+    .chatcard{position:absolute;left:6%;top:14%;width:220px;transform:rotate(-6deg);border-radius:14px;box-shadow:var(--shadow-3);background:#fff;padding:10px}
+    .chatcard img{width:100%;border-radius:12px;display:block}
+    .wikishot{position:absolute;right:0;bottom:0;width:min(520px,90%);border-radius:16px;box-shadow:var(--shadow-3);transform:rotate(1.5deg)}
+
+    /* TRUST ROW */
+    .trust-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .trust-chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--sub);font-weight:800;box-shadow:var(--shadow-1)}
+    .trust-chip svg{width:16px;height:16px;color:var(--ok)}
+
+    /* EXPORT (Step 1) */
+    .export-pro{padding:64px 0 12px}
+    .export-head{display:flex;justify-content:center;align-items:flex-start;margin-bottom:24px}
+    .tabs{display:flex;gap:8px;padding:8px;background:var(--bg-soft);border:1px solid var(--line);border-radius:999px;box-shadow:var(--shadow-1);margin:0 auto;width:fit-content}
+    .tab{appearance:none;border:0;background:transparent;padding:12px 18px;border-radius:999px;font-weight:800;color:var(--muted);cursor:pointer;transition:.2s;font-size:14px}
+    .tab.is-active{background:#fff;color:var(--ink);box-shadow:var(--shadow-2);transform:translateY(-1px)}
+    .tab:not(.is-active):hover{background:rgba(255,255,255,.6);color:var(--ink)}
+    .panel{margin-top:14px}
+
+    .phones-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-bottom:8px;justify-items:center}
+    .step{display:flex;flex-direction:column;align-items:center;width:100%}
+    .step-content{display:flex;align-items:flex-start;gap:16px;margin-top:18px;width:100%;max-width:300px}
+    .badge{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--brand),var(--brand-2));box-shadow:var(--shadow-1);font-size:14px;flex-shrink:0}
+    .step-title{font-weight:800;color:var(--ink);line-height:1.5}
+    .step-note{color:var(--muted);font-weight:600;font-size:13px;margin-top:4px}
+    .kbd{display:inline-block;padding:0 6px;border-radius:6px;background:#eef2f7;border:1px solid #d0d7de;font-weight:700;font-size:13px}
+
+    .phone{width:100%;max-width:200px;height:400px;border-radius:24px;padding:8px;background:#000;box-shadow:var(--shadow-3);overflow:hidden;margin:0 auto}
+    .phone img{width:100%;height:100%;object-fit:cover;border-radius:16px;display:block}
+    figcaption{text-align:center;font-weight:700;font-size:13px;color:var(--ink);margin-top:8px}
+
+    /* STEP 2 */
+    .split{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:stretch}
+    .drop{border:2px dashed var(--line);border-radius:20px;padding:28px;display:grid;place-items:center;text-align:center;background:linear-gradient(180deg,#fff,#fafbfc);box-shadow:var(--shadow-1)}
+    .drop:hover{transform:translateY(-1px);box-shadow:var(--shadow-2)}
+    .drop h3{margin:8px 0 6px}
+    .drop p{margin:0;color:var(--muted)}
+    .preview{ max-width:600px; margin:0 auto; position:relative;background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow-2);padding:18px;display:grid;gap:10px}
+    .preview__title{font-weight:800}
+    .authors{display:grid;gap:8px;max-height:260px;overflow:auto;border:1px dashed var(--line);border-radius:12px;padding:10px}
+    .a{display:flex;align-items:center;gap:10px;padding:8px 6px;border-bottom:1px dashed var(--line)}
+    .a:last-child{border-bottom:0}
+    .a span{margin-left:auto;color:var(--muted);font-size:12px}
+
+    /* Steps list for Telegram panel */
+    .steps-list{display:grid;gap:12px;justify-items:center}
+    .steps-list .step-content{max-width:560px}
+
+    /* Telegram panel two-column layout with video */
+    .tg-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:24px;align-items:start}
+    .tg-video{position:relative;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow-2);overflow:hidden}
+    .tg-video video{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#000}
+    .tg-video__caption{padding:10px 12px;color:var(--muted);font-weight:700;font-size:13px;border-top:1px solid var(--line);background:var(--bg-soft)}
+
+    footer{padding:40px 0 56px;color:var(--muted);text-align:center}
+
+    /* Responsive */
+    @media (max-width:980px){
+      .hero__grid,.split{grid-template-columns:1fr}
+      .tg-grid{grid-template-columns:1fr}
+      .chatcard{left:0;top:0;transform:rotate(-4deg)}
+      .wikishot{position:static;transform:none;width:100%}
+      .section{padding:40px 0}
+      .hero{padding:40px 0 24px}
+      .export-pro{padding:40px 0 12px}
+      .nav__links{gap:12px;flex-wrap:wrap}
+      .nav__links a{font-size:14px}
+      .btn{padding:10px 14px;font-size:14px}
+      .phones-grid{grid-template-columns:repeat(3,1fr);gap:24px}
+      .phone{max-width:180px;height:360px}
+      .step-content{margin-top:12px;gap:12px}
+      .badge{width:28px;height:28px;font-size:12px}
+    }
+    @media (max-width:640px){
+      .phones-grid{grid-template-columns:repeat(2,1fr);gap:20px}
+      /* Put image above text and simplify visuals */
+      .hero__grid > .mock{order:-1;margin-bottom:12px}
+      .mock{min-height:0}
+      .chatcard{display:none}
+      .wikishot{position:static;transform:none;width:100%;border-radius:12px;box-shadow:var(--shadow-2)}
+    }
+    @media (max-width:480px){
+      .container,.container-wide{padding:0 12px}
+      .nav__in{padding:8px 12px;gap:12px}
+      .brand{font-size:18px}
+      .nav__links{gap:8px}
+      /* Hide section links on mobile, keep primary CTA button */
+      .nav__links a{display:none}
+      .nav__links a{font-size:12px}
+      .btn{padding:8px 12px;font-size:13px}
+      .phones-grid{grid-template-columns:1fr;gap:16px}
+      .phone{max-width:160px;height:320px}
+      .badge{width:24px;height:24px;font-size:11px}
+      .h1{font-size:clamp(24px,10vw,36px)}
+      .h2{font-size:clamp(18px,8vw,28px)}
+      .lead{font-size:15px}
+      .sub{font-size:13px}
+      /* Simpler mobile hero layout (reference only) */
+      .hero{padding:100px 0 48px;gap:24px;text-align:center}
+      .privacy-note{display:none}
+      .hero__cta{justify-content:center}
+      .hero .lead{max-width:34ch;margin:0 auto}
+      .nav__links{flex-wrap:nowrap}
+      /* Add subtle bottom fade on hero image */
+      .wikishot{
+        -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 70%, rgba(0,0,0,0.35) 90%, rgba(0,0,0,0) 100%);
+        mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 70%, rgba(0,0,0,0.35) 90%, rgba(0,0,0,0) 100%);
+      }
+    }
+
+    @media print{.nav,.hero__cta .btn,dialog{display:none!important}}
+  </style>
+</head>
+
+<body>
+  <!-- NAV -->
+  <header class="nav" role="navigation" aria-label="Main">
+    <div class="nav__in">
+      <div class="brand">MIRROR</div>
+      <nav class="nav__links">
+        <a href="#export" data-i18n="nav.export">Как&nbsp;экспортировать</a>
+        <a href="#privacy" data-i18n="nav.privacy">Приватность</a>
+        <a href="#trust" data-i18n="nav.trust">Открытый&nbsp;код</a>
+        <a href="{{ GITHUB_URL|default:'https://github.com' }}" target="_blank" rel="noopener noreferrer" data-i18n="nav.github">GitHub</a>
+        <div class="lang-switch" role="group" aria-label="Смена языка">
+          <button class="btn" id="lang-ru" data-lang="ru">RU</button>
+          <button class="btn" id="lang-en" data-lang="en">EN</button>
+        </div>
+        <button class="btn btn--primary" onclick="openUpload()" data-i18n="nav.cta">Попробовать бесплатно</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero container" aria-labelledby="hero-title">
+    <div class="hero__grid">
+      <div>
+        <div class="privacy-note" role="status" aria-live="polite" data-i18n="hero.privacy">🔐 Открытый исходный код</div>
+        <h1 id="hero-title" class="h1" data-i18n="hero.title">Делаем вики-страничку про вас — по чатам из телеграма</h1>
+        <p class="lead" data-i18n="hero.lead">Прочитайте собственную биографию! Мы создаём невероятно глубокую и содержательную вики‑страницу о вас на основе экспорта из WhatsApp. Это приватно. Это показывает вашу динамику, психологию и помогает понять, какую жизнь вы ведёте.</p>
+        <div class="hero__cta">
+          <button class="btn btn--primary" onclick="openUpload()" data-i18n="hero.cta">Попробовать бесплатно</button>
+          <a class="btn" href="{{ GITHUB_URL|default:'https://github.com' }}" target="_blank" rel="noopener noreferrer" data-i18n="hero.github">Открытый код на GitHub</a>
+        </div>
+
+
+
+      </div>
+      <div class="mock" aria-hidden="true">
+        <div class="chatcard"><img id="hero-chat-img" src="{% static 'ui/MessagesExample.png' %}" alt="Предпросмотр чата" data-i18n-alt="hero.chat.alt"></div>
+        <img class="wikishot" id="hero-wiki-img" src="{% static 'ui/WikiExample.png' %}" alt="Пример страницы в стиле Википедии" data-i18n-alt="hero.wiki.alt" />
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 1 — EXPORT -->
+  <section id="export" class="export-pro section section--soft" aria-labelledby="export-title">
+    <div class="container-wide">
+      <header class="export-head">
+        <div>
+          <h2 id="export-title" class="h2" data-i18n="export.title">Шаг 1 — Экспортируйте чат</h2>
+          <p class="sub" data-i18n="export.sub">Займёт ~60 секунд. Начните с чата, который лучше всего вас отражает (близкий друг, партнёр, личные заметки).</p>
+        </div>
+      </header>
+
+      <div class="tabs" role="tablist" aria-label="Выберите мессенджер" data-i18n-aria-label="tabs.aria">
+        <button class="tab is-active" id="tab-wa" role="tab" aria-selected="true" aria-controls="panel-wa" data-i18n="tabs.wa">Инструкция WhatsApp</button>
+        <button class="tab" id="tab-tg" role="tab" aria-selected="false" aria-controls="panel-tg" data-i18n="tabs.tg">Инструкция Telegram</button>
+      </div>
+
+      <!-- WhatsApp panel -->
+      <section id="panel-wa" class="panel" role="tabpanel" aria-labelledby="tab-wa">
+        <div class="phones-grid">
+          <div class="step">
+            <div class="phone">
+              <img src="{% static 'ui/Instruction1.png' %}" alt="Откройте чат → нажмите на имя → Экспорт чата" loading="lazy" data-i18n-alt="wa.s1.alt">
+            </div>
+            <div class="step-content">
+              <div class="badge">1</div>
+              <div>
+                <div class="step-title" data-i18n="wa.s1.title">Откройте чат → нажмите <b>имя</b> вверху → пролистайте до <span class="kbd">Экспорт чата</span></div>
+                <div class="step-note" data-i18n="wa.s1.note">iPhone: кнопка находится в самом низу.</div>
+              </div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="phone">
+              <img src="{% static 'ui/Instruction2.png' %}" alt="Выберите Без медиа" loading="lazy" data-i18n-alt="wa.s2.alt">
+            </div>
+            <div class="step-content">
+              <div class="badge">2</div>
+              <div>
+                <div class="step-title" data-i18n="wa.s2.title">Выберите <b>Без медиа</b></div>
+                <div class="step-note" data-i18n="wa.s2.note">Так файл будет маленьким. Медиа не нужны.</div>
+              </div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="phone">
+              <img src="{% static 'ui/Instruction3.png' %}" alt="Сохраните экспорт в .txt или .zip" loading="lazy" data-i18n-alt="wa.s3.alt">
+            </div>
+            <div class="step-content">
+              <div class="badge">3</div>
+              <div>
+                <div class="step-title" data-i18n="wa.s3.title">Сохраните файл как <code>.txt</code> (или <code>.zip</code>)</div>
+                <div class="step-note" data-i18n="wa.s3.note">Сохраните в Files/Drive или отправьте себе на почту. На следующем шаге вы загрузите файл.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Telegram panel (English, Desktop-first, detailed) with video -->
+      <section id="panel-tg" class="panel" role="tabpanel" aria-labelledby="tab-tg" hidden>
+        <div class="tg-grid">
+          <div class="steps-list">
+            <div class="step">
+              <div class="step-content">
+                <div class="badge">1</div>
+                <div>
+                  <div class="step-title" data-i18n="tg.s1.title">Установите эту версию <b>Telegram Desktop</b> (бета)</div>
+                  <div class="step-note" data-i18n="tg.s1.note">Скачайте с <a href="https://desktop.telegram.org/?setln=en" target="_blank" rel="noopener noreferrer">desktop.telegram.org</a>.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-content">
+                <div class="badge">2</div>
+                <div>
+                  <div class="step-title" data-i18n="tg.s2.title">Откройте приложение и войдите</div>
+                  <div class="step-note" data-i18n="tg.s2.note">Используйте аккаунт с нужным чатом.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-content">
+                <div class="badge">3</div>
+                <div>
+                  <div class="step-title" data-i18n="tg.s3.title">Экспортируйте историю чата</div>
+                  <div class="step-note" data-i18n="tg.s3.note">Откройте чат → нажмите троеточие (⋮) → <b>Export chat history</b>. Либо: Settings → <b>Advanced</b> → <b>Export Telegram data</b> → <b>Export chat history</b>.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-content">
+                <div class="badge">4</div>
+                <div>
+                  <div class="step-title" data-i18n="tg.s4.title">Выберите формат: <b>JSON</b> и загрузите файл</div>
+                  <div class="step-note" data-i18n="tg.s4.note">JSON лучше всего подходит для точного анализа.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="background:#fff;border:1px solid var(--line);text-align:left">
+              <div class="step-title" style="margin-bottom:6px" data-i18n="tg.official.title">Официальный гайд</div>
+              <div class="step-note" data-i18n="tg.official.note">Смотрите <a href="https://telegram.org/blog/export-and-more" target="_blank" rel="noopener noreferrer">telegram.org/blog/export-and-more</a> для подробностей.</div>
+            </div>
+          </div>
+
+          <div class="tg-video">
+            <video src="https://telegram.org/resources/video/ExDataBlog.mp4" controls playsinline></video>
+            <div class="tg-video__caption" data-i18n="tg.video.caption">Официальное демо‑видео Telegram</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="section container-wide" aria-labelledby="upload-title">
+    <h2 id="upload-title" class="h2" data-i18n="step2.title">Шаг 2 — Получите удивительные инсайты</h2>
+      <div class="preview" role="region" aria-label="Preview example">
+        <div class="preview__title" data-i18n="preview.title">Выберите, что включить</div>
+        <div class="authors">
+          <label class="a"><input type="checkbox" checked disabled /> Alex <span>2 413 сообщений</span></label>
+          <label class="a"><input type="checkbox" checked disabled /> Marina <span>1 102 сообщений</span></label>
+          <label class="a"><input type="checkbox" disabled /> Work Chat <span>684 сообщений</span></label>
+          <label class="a"><input type="checkbox" disabled /> Notes to self <span>219 сообщений</span></label>
+        </div>
+        <div class="sub" data-i18n="preview.sub">Вы сами выбираете авторов/чаты. Можно исключить что угодно. После обработки ничего не хранится.</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn--primary" onclick="openUpload()" data-i18n="preview.upload">Загрузить файл</button>
+          <a class="btn" href="#privacy" data-i18n="preview.privacy">Подробнее о приватности</a>
+        </div>
+    </div>
+
+  </section>
+
+  <!-- PRIVACY -->
+  <section id="privacy" class="section" aria-labelledby="privacy-title">
+    <div class="container-wide">
+      <h2 id="privacy-title" class="h2" data-i18n="privacy.title">Приватность</h2>
+      <div style="display:grid;gap:20px">
+        <div style="display:flex;align-items:flex-start;gap:16px">
+          <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--ok),var(--ok-2));display:grid;place-items:center;flex-shrink:0;margin-top:2px">
+            <span style="color:#fff;font-size:12px;font-weight:800">✓</span>
+          </div>
+          <div>
+            <div style="font-weight:800;color:var(--ink);margin-bottom:4px" data-i18n="privacy.1.title">Открытый код</div>
+            <div style="color:var(--sub);line-height:1.5" data-i18n="privacy.1.text">Движок анализа с открытым исходным кодом. Можно проверить и запустить локально.</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:16px">
+          <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--ok),var(--ok-2));display:grid;place-items:center;flex-shrink:0;margin-top:2px">
+            <span style="color:#fff;font-size:12px;font-weight:800">✓</span>
+          </div>
+          <div>
+            <div style="font-weight:800;color:var(--ink);margin-bottom:4px" data-i18n="privacy.2.title">Без хранения данных</div>
+            <div style="color:var(--sub);line-height:1.5" data-i18n="privacy.2.text">Файлы обрабатываются и удаляются. Мы не храним ваши данные.</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:16px">
+          <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--ok),var(--ok-2));display:grid;place-items:center;flex-shrink:0;margin-top:2px">
+            <span style="color:#fff;font-size:12px;font-weight:800">✓</span>
+          </div>
+          <div>
+            <div style="font-weight:800;color:var(--ink);margin-bottom:4px" data-i18n="privacy.3.title">Вы выбираете, что анализировать</div>
+            <div style="color:var(--sub);line-height:1.5" data-i18n="privacy.3.text">Выбирайте авторов/чаты для включения. Исключайте всё лишнее.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OPEN SOURCE / TRUST -->
+  <section id="trust" class="section section--soft" aria-labelledby="trust-title">
+    <div class="container-wide">
+      <div style="text-align:center;margin-bottom:48px">
+        <h2 id="trust-title" class="h2" data-i18n="trust.title">Почему нам можно доверять</h2>
+        <p class="sub" style="max-width:600px;margin:0 auto" data-i18n="trust.sub">Мы понимаем, что это ответственно. Мы настолько впечатлены полезностью MIRROR для самоанализа, что сделали его открытым. Мы работали в серьёзных компаниях, это тоже может вдохновить на доверие. Проект создан инженерами, работавшими в Meta и JetBrains. Код открыт для ревью. Можно запускать локально.</p>
+      </div>
+
+      <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:56px">
+        <a class="btn btn--primary" href="{{ GITHUB_URL|default:'https://github.com' }}" target="_blank" rel="noopener noreferrer" style="padding:16px 24px;font-size:16px" data-i18n="trust.github">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="margin-right:8px">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+          Открытый код на GitHub
+        </a>
+      </div>
+
+      <div style="display:grid;gap:32px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));max-width:800px;margin:0 auto">
+        <div style="background:linear-gradient(135deg,#fff 0%,#f8fafc 100%);border-radius:var(--radius-xl);padding:32px;text-align:center;box-shadow:var(--shadow-2);border:1px solid rgba(0,0,0,0.05);transition:transform .2s ease,box-shadow .2s ease" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='var(--shadow-3)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='var(--shadow-2)'">
+          <div style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand-2));display:flex;align-items:center;justify-content:center;margin:0 auto 24px;box-shadow:var(--shadow-2)">
+            <img src="/static/ui/founder-alexander.jpg" alt="Alexander Chisler" onerror="this.style.display='none'" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:3px solid #fff">
+          </div>
+          <div style="font-weight:800;font-size:20px;margin-bottom:8px;color:var(--ink)">Alexander Chisler</div>
+          <div class="caption" style="margin-bottom:20px" data-i18n="founder1.caption">бывший Meta</div>
+          <a class="btn" href="https://www.linkedin.com/in/alexander-chisler/" target="_blank" rel="noopener noreferrer" style="background:var(--bg-soft);border:1px solid var(--line);color:var(--ink);font-weight:700;padding:12px 20px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right:6px"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            LinkedIn
+          </a>
+        </div>
+
+        <div style="background:linear-gradient(135deg,#fff 0%,#f8fafc 100%);border-radius:var(--radius-xl);padding:32px;text-align:center;box-shadow:var(--shadow-2);border:1px solid rgba(0,0,0,0.05);transition:transform .2s ease,box-shadow .2s ease" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='var(--shadow-3)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='var(--shadow-2)'">
+          <div style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand-2));display:flex;align-items:center;justify-content:center;margin:0 auto 24px;box-shadow:var(--shadow-2)">
+            <img src="/static/ui/founder-sergey.jpg" alt="Sergey Ibragimov" onerror="this.style.display='none'" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:3px solid #fff">
+          </div>
+          <div style="font-weight:800;font-size:20px;margin-bottom:8px;color:var(--ink)">Sergey Ibragimov</div>
+          <div class="caption" style="margin-bottom:20px" data-i18n="founder2.caption">бывший JetBrains, экс‑CEO Eburet</div>
+          <a class="btn" href="https://www.linkedin.com/in/sergei-ibragimov-724227aa/?originalSubdomain=ru" target="_blank" rel="noopener noreferrer" style="background:var(--bg-soft);border:1px solid var(--line);color:var(--ink);font-weight:700;padding:12px 20px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right:6px"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            LinkedIn
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="container">
+    <div data-i18n="footer">© MIRROR. Открытый исходный код.</div>
+  </footer>
+
+  <!-- UPLOAD MODAL -->
+  <dialog id="upload" style="padding:0;border:none;border-radius:20px;max-width:720px;width:92vw">
+    <div style="padding:18px 18px 24px">
+      <div style="text-align:center">
+        <h3 style="margin:10px 0 0;font-size:24px" data-i18n="upload.title">Загрузить экспорт чата</h3>
+        <p class="sub" style="margin:0 auto;max-width:46ch" data-i18n="upload.sub">WhatsApp (<code>.txt</code>/<code>.zip</code>) или Telegram (<code>.json</code>). Вы выберете авторов перед анализом.</p>
+      </div>
+
+      <div id="drop" class="drop" tabindex="0" aria-label="Область перетаскивания" data-i18n-aria-label="drop.aria" style="margin-top:16px" onclick="pickFile()">
+        <div style="font-size:40px">📁</div>
+        <h3 data-i18n="drop.title">Перетащите файл сюда</h3>
+        <p data-i18n="drop.sub">или нажмите, чтобы выбрать файл</p>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px">
+        <button class="btn btn--primary" onclick="pickFile()" data-i18n="btn.choose">Выбрать файл</button>
+        <button class="btn" onclick="closeUpload()" data-i18n="btn.close">Закрыть</button>
+      </div>
+
+      <input id="file" type="file" accept=".json,.txt,.zip" style="display:none" />
+
+      <div id="authorsWrap" style="display:none;margin-top:12px">
+        <div style="font-weight:800;margin-bottom:6px" data-i18n="authors.select">Выберите авторов для анализа</div>
+        <div id="authors" class="authors"></div>
+
+
+        <!-- Password input section -->
+        <div id="passwordSection" style="margin-top:10px;padding:8px;background:var(--bg-soft);border-radius:8px">
+          <label style="display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px">
+            <span data-i18n="password.label">Введите пароль для защиты ваших данных:</span>
+            <input type="password" id="password" placeholder="Введите пароль" value="123456" style="padding:8px;border:1px solid var(--line);border-radius:6px;font-size:14px" />
+            <input type="password" id="passwordConfirm" placeholder="Подтвердите пароль" value="123456" style="padding:8px;border:1px solid var(--line);border-radius:6px;font-size:14px" />
+            <div id="passwordError" style="color:#dc2626;font-size:12px;display:none" data-i18n="password.error">Пароли не совпадают</div>
+          </label>
+        </div>
+
+        <button id="analyze" class="btn btn--primary" style="width:100%;margin-top:10px" disabled data-i18n="analyze.selected">Анализировать выбранное</button>
+      </div>
+
+      <div id="progress" style="display:none;gap:8px;margin-top:10px" aria-live="polite">
+        <div style="height:8px;background:#eef2f4;border-radius:999px;overflow:hidden">
+          <div id="fill" style="width:0%;height:100%;background:var(--ok-2);transition:width .3s ease"></div>
+        </div>
+        <div id="status" style="color:var(--muted);text-align:center;font-weight:700"></div>
+      </div>
+      <div id="ok" style="display:none;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;padding:10px 12px;border-radius:12px;font-weight:700;margin-top:10px"></div>
+      <div id="err" style="display:none;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;padding:10px 12px;border-radius:12px;font-weight:700;margin-top:10px"></div>
+    </div>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" defer></script>
+
+
+
+  <script src="{% static 'mirror/crypto.js' %}" defer></script>
+  <script>
+    // Lightweight i18n with URL param (?lang=ru|en), localStorage persistence, and live toggle
+    const I18N = (()=>{
+      const dict = {
+        ru: {
+          'nav.export':'Как\u00A0экспортировать',
+          'nav.privacy':'Приватность',
+          'nav.trust':'Открытый\u00A0код',
+          'nav.github':'GitHub',
+          'nav.cta':'Попробовать бесплатно',
+          'hero.privacy':'🔐 Открытый исходный код',
+          'hero.title':'Делаем вики страничку по чатам из телеграма',
+          'hero.lead':' Ваш психологический портрет, динамика в разные годы жизни и рекомендации, что со всем этим делать. На одной вики страничке, защищенной паролем.',
+          'hero.cta':'Попробовать бесплатно',
+          'hero.github':'Открытый код на GitHub',
+          'hero.chat.alt':'Предпросмотр чата',
+          'hero.wiki.alt':'Пример страницы в стиле Википедии',
+          'export.title':'Шаг 1 — Скачиваем чаты',
+          'export.sub':'Займёт ~60 секунд. Начните с чата, который лучше всего вас отражает (близкий друг, партнёр, личные заметки).',
+          'tabs.aria':'Выберите мессенджер',
+          'tabs.wa':'Инструкция WhatsApp',
+          'tabs.tg':'Инструкция Telegram',
+          'wa.s1.alt':'Откройте чат → нажмите на имя → Экспорт чата',
+          'wa.s1.title':'Откройте чат → нажмите <b>имя</b> вверху → пролистайте до <span class="kbd">Экспорт чата</span>',
+          'wa.s1.note':'iPhone: кнопка находится в самом низу.',
+          'wa.s2.alt':'Выберите Без медиа',
+          'wa.s2.title':'Выберите <b>Без медиа</b>',
+          'wa.s2.note':'Так файл будет маленьким. Медиа не нужны.',
+          'wa.s3.alt':'Сохраните экспорт в .txt или .zip',
+          'wa.s3.title':'Сохраните файл как <code>.txt</code> (или <code>.zip</code>)',
+          'wa.s3.note':'Сохраните в Files/Drive или отправьте себе на почту. На следующем шаге вы загрузите файл.',
+          'tg.s1.title':'Установите эту версию <b>Telegram Desktop</b> (бета)',
+          'tg.s1.note':'Скачайте с <a href="https://desktop.telegram.org/?setln=en" target="_blank" rel="noopener noreferrer">desktop.telegram.org</a>.',
+          'tg.s2.title':'Откройте приложение и войдите',
+          'tg.s2.note':'Используйте аккаунт с нужным чатом.',
+          'tg.s3.title':'Экспортируйте историю чата',
+          'tg.s3.note':'Откройте чат → нажмите троеточие (⋮) → <b>Export chat history</b>. Либо: Settings → <b>Advanced</b> → <b>Export Telegram data</b> → <b>Export chat history</b>.',
+          'tg.s4.title':'Выберите формат: <b>JSON</b> и загрузите файл',
+          'tg.s4.note':'JSON лучше всего подходит для точного анализа.',
+          'tg.official.title':'Официальный гайд',
+          'tg.official.note':'Смотрите <a href="https://telegram.org/blog/export-and-more" target="_blank" rel="noopener noreferrer">telegram.org/blog/export-and-more</a> для подробностей.',
+          'tg.video.caption':'Официальное демо‑видео Telegram',
+          'step2.title':'Шаг 2 — Получаем мощные инсайты',
+          'preview.title':'Выберите, что включить',
+          'preview.sub':'Вы сами выбираете авторов/чаты. Можно исключить что угодно. После обработки ничего не хранится.',
+          'preview.upload':'Загрузить файл',
+          'preview.privacy':'Подробнее о приватности',
+          'privacy.title':'Приватность',
+          'privacy.1.title':'Открытый код',
+          'privacy.1.text':'Движок анализа с открытым исходным кодом. Можно проверить и запустить локально.',
+          'privacy.2.title':'Без хранения данных',
+          'privacy.2.text':'Файлы обрабатываются и удаляются. Мы не храним ваши данные.',
+          'privacy.3.title':'Вы выбираете, что анализировать',
+          'privacy.3.text':'Выбирайте авторов/чаты для включения. Исключайте всё лишнее.',
+          'trust.title':'Почему нам можно доверять',
+          'trust.sub':'Мы любим самокопание — и настолько впечатлились крутостью MIRROR для самоанализа, что пришлось сделать open-source. Чтобы вы нам доверяли. Мы работали в топовых компаниях, пусть это тоже поможет вам поверить, что мы не сохраняем ваши чаты. Нам не нужны эти проблемы. Код открыт для ревью. Можно запускать локально.',
+          'trust.github':'Открытый код на GitHub',
+          'founder1.caption':'Работал в Meta-е',
+          'founder2.caption':'Работал в JetBrains, экс‑CEO Eburet',
+          'footer':'© MIRROR. Открытый исходный код.',
+          'upload.title':'Загрузить экспорт чата',
+          'upload.sub':'WhatsApp (<code>.txt</code>/<code>.zip</code>) или Telegram (<code>.json</code>). Вы выберете авторов перед анализом.',
+          'drop.aria':'Область перетаскивания',
+          'drop.title':'Перетащите файл сюда',
+          'drop.sub':'или нажмите, чтобы выбрать файл',
+          'btn.choose':'Выбрать файл',
+          'btn.close':'Закрыть',
+          'authors.select':'Выберите авторов для анализа',
+          'password.label':'Введите пароль для защиты ваших данных:',
+          'password.error':'Пароли не совпадают',
+          'analyze.selected':'Анализировать выбранное',
+          'analyze.count':(n)=>`Анализировать ${n} сообщений`,
+          'progress.reading':'Чтение файла…',
+          'progress.analyzing':'Анализ авторов…',
+          'progress.preparing':'Подготовка…',
+          'progress.ready':'Готово! Переходим…',
+          'error.selectOne':'Выберите хотя бы одного автора.',
+          'error.readFile':(e)=>`Не удалось прочитать файл: ${e}`,
+          'error.parse':'Не удалось распарсить файл. Если это Telegram — экспортируйте в JSON.',
+          'error.generic':(e)=>`Ошибка: ${e}`,
+          'uuid':'UUID:'
+        },
+        en: {
+          'nav.export':'How to Export',
+          'nav.privacy':'Privacy',
+          'nav.trust':'Open Source',
+          'nav.github':'GitHub',
+          'nav.cta':'Try for free',
+          'hero.privacy':'🔐 Open-source',
+          'hero.title':'A password-protected wiki-page about you with deep insights',
+          'hero.lead':'Read your own biography! We make an insanely deep and insightful wiki-page about you — from your WhatsApp exports. It is private. It tells a story of your progress, psychology and helps understand what kind of life you live.',
+          'hero.cta':'Try for free',
+          'hero.github':'Open Source on GitHub',
+          'hero.chat.alt':'Chat preview',
+          'hero.wiki.alt':'Wikipedia-style profile example',
+          'export.title':'Step 1 — Export your chat',
+          'export.sub':'Takes ~60 seconds. Start with a chat that represents you best (close friend, partner, private notes).',
+          'tabs.aria':'Choose messenger',
+          'tabs.wa':'WhatsApp Instruction',
+          'tabs.tg':'Telegram Instruction',
+          'wa.s1.alt':'Open chat → tap name → Export Chat',
+          'wa.s1.title':'Open the chat → tap the <b>name</b> at the top → scroll to <span class="kbd">Export Chat</span>',
+          'wa.s1.note':'iPhone: the button is at the very bottom.',
+          'wa.s2.alt':'Choose Without Media',
+          'wa.s2.title':'Choose <b>Without Media</b>',
+          'wa.s2.note':'Keeps the file tiny. Media isn\'t needed.',
+          'wa.s3.alt':'Save export file as .txt or .zip',
+          'wa.s3.title':'Save the file as <code>.txt</code> (or <code>.zip</code>)',
+          'wa.s3.note':'Save to Files/Drive or email it to yourself. You\'ll upload on the next step.',
+          'tg.s1.title':'Install this version of <b>Telegram Desktop</b> (beta)',
+          'tg.s1.note':'Download from <a href="https://desktop.telegram.org/?setln=en" target="_blank" rel="noopener noreferrer">desktop.telegram.org</a>.',
+          'tg.s2.title':'Open the app and sign in',
+          'tg.s2.note':'Use the account that has the chat you want to export.',
+          'tg.s3.title':'Export the chat history',
+          'tg.s3.note':'Open the chat → click the three dots (⋮) → <b>Export chat history</b>. Alternatively: Settings → <b>Advanced</b> → <b>Export Telegram data</b> → <b>Export chat history</b>.',
+          'tg.s4.title':'Choose format: <b>JSON</b> and upload when ready',
+          'tg.s4.note':'JSON works best for accurate analysis.',
+          'tg.official.title':'Official guide',
+          'tg.official.note':'See <a href="https://telegram.org/blog/export-and-more" target="_blank" rel="noopener noreferrer">telegram.org/blog/export-and-more</a> for more details.',
+          'tg.video.caption':'Official Telegram demo video',
+          'step2.title':'Step 2 — Get amazing insights',
+          'preview.title':'Choose what to include',
+          'preview.sub':'You choose which authors/chats to include. Exclude anything. Nothing is stored after processing.',
+          'preview.upload':'Upload a file',
+          'preview.privacy':'Privacy details',
+          'privacy.title':'Privacy',
+          'privacy.1.title':'Open source',
+          'privacy.1.text':'The analysis engine is open source. You can inspect and run it locally.',
+          'privacy.2.title':'No storage',
+          'privacy.2.text':'Files are processed and then deleted. We don\'t keep your data.',
+          'privacy.3.title':'You choose what to analyze',
+          'privacy.3.text':'Select which authors/chats to include. Exclude anything you don\'t want analyzed.',
+          'trust.title':'Trusting your chats to us',
+          'trust.sub':'I know it\'s scary. We were so amazed by the usefulness of MIRROR for self-analysis that we released it open-source. We also worked for respectable companies in the past. Built by ex-Meta and ex-JetBrains engineers. Code is open for review. Feel free to run locally.',
+          'trust.github':'Open Source on GitHub',
+          'founder1.caption':'ex-Meta',
+          'founder2.caption':'ex-JetBrains, ex-Eburet CEO',
+          'footer':'© MIRROR. Open-source.',
+          'upload.title':'Upload chat export',
+          'upload.sub':'WhatsApp (<code>.txt</code>/<code>.zip</code>) or Telegram (<code>.json</code>). You’ll choose authors before analysis.',
+          'drop.aria':'Drag and drop area',
+          'drop.title':'Drag & drop your file here',
+          'drop.sub':'or click to choose a file',
+          'btn.choose':'Choose file',
+          'btn.close':'Close',
+          'authors.select':'Select authors to analyze',
+          'password.label':'Enter password to protect your data:',
+          'password.error':'Passwords do not match',
+          'analyze.selected':'Analyze selected',
+          'analyze.count':(n)=>`Analyze ${n} messages`,
+          'progress.reading':'Reading file…',
+          'progress.analyzing':'Analyzing authors…',
+          'progress.preparing':'Preparing…',
+          'progress.ready':'Ready! Redirecting…',
+          'error.selectOne':'Select at least one author.',
+          'error.readFile':(e)=>`Failed to read file: ${e}`,
+          'error.parse':'Could not parse file. If this is Telegram, export as JSON.',
+          'error.generic':(e)=>`Error: ${e}`,
+          'uuid':'UUID:'
+        }
+      };
+      const params = new URLSearchParams(location.search);
+      let lang = (params.get('lang')||localStorage.getItem('mirror-lang')||'ru').toLowerCase();
+      if(!['ru','en'].includes(lang)) lang='ru';
+      function setLang(next){
+        lang = ['ru','en'].includes(next)?next:'ru';
+        try{ localStorage.setItem('mirror-lang', lang); }catch(e){}
+        const p = new URLSearchParams(location.search);
+        p.set('lang', lang);
+        history.replaceState(null, '', `${location.pathname}?${p.toString()}${location.hash}`);
+        apply();
+      }
+      function t(key, arg){
+        const entry = dict[lang][key];
+        if(typeof entry === 'function'){
+          let val;
+          if (arg && typeof arg === 'object') {
+            if ('count' in arg) {
+              val = formatNumber(arg.count);
+            } else if ('err' in arg) {
+              val = arg.err;
+            } else {
+              val = arg;
+            }
+          } else {
+            val = arg;
+          }
+          return entry(val);
+        }
+        return entry ?? key;
+      }
+      function formatNumber(n){ return Number(n).toLocaleString(lang==='ru'?'ru-RU':'en-US'); }
+      function apply(){
+        document.documentElement.setAttribute('lang', lang);
+        document.querySelectorAll('[data-i18n]').forEach(el=>{ const key=el.getAttribute('data-i18n'); const val=t(key); if(val!==undefined){ el.innerHTML = val; } });
+        document.querySelectorAll('[data-i18n-alt],[data-i18n-title],[data-i18n-aria-label]').forEach(el=>{
+          if(el.hasAttribute('data-i18n-alt')) el.setAttribute('alt', t(el.getAttribute('data-i18n-alt')));
+          if(el.hasAttribute('data-i18n-title')) el.setAttribute('title', t(el.getAttribute('data-i18n-title')));
+          if(el.hasAttribute('data-i18n-aria-label')) el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria-label')));
+        });
+        const ruBtn = document.getElementById('lang-ru');
+        const enBtn = document.getElementById('lang-en');
+        if(ruBtn && enBtn){
+          ruBtn.classList.toggle('btn--primary', lang==='ru');
+          enBtn.classList.toggle('btn--primary', lang==='en');
+          ruBtn.setAttribute('aria-pressed', String(lang==='ru'));
+          enBtn.setAttribute('aria-pressed', String(lang==='en'));
+        }
+        if(window.mirrorApp && typeof window.mirrorApp.updateAnalyzeButton === 'function'){
+          window.mirrorApp.updateAnalyzeButton();
+        }
+      }
+      function bindToggle(){
+        const ruBtn = document.getElementById('lang-ru');
+        const enBtn = document.getElementById('lang-en');
+        if(ruBtn) ruBtn.addEventListener('click',()=> setLang('ru'));
+        if(enBtn) enBtn.addEventListener('click',()=> setLang('en'));
+      }
+      return { t, formatNumber, apply, bindToggle, setLang, get lang(){ return lang; } };
+    })();
+  </script>
+  <script>
+    // Modal helpers with graceful fallback
+    let $modal;
+    function openUpload(){
+      if(!$modal) $modal = document.getElementById('upload');
+      if(!$modal) return;
+      if ($modal.showModal) $modal.showModal(); else $modal.setAttribute('open','');
+    }
+    function closeUpload(){
+      if(!$modal) $modal = document.getElementById('upload');
+      if(!$modal) return;
+      if ($modal.close) $modal.close(); else $modal.removeAttribute('open');
+    }
+    function pickFile(){
+      const fileInput = document.getElementById('file');
+      if(fileInput) fileInput.click();
+    }
+
+    // WhatsApp parser (robust, keeps system messages out)
+    class WhatsAppParser{
+      constructor(){
+        this.re = /^\[(\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}:\d{2})\] ~?([^:]+): (.+)$/;
+        this.reAlt = /^(\d{1,2}\/\d{1,2}\/\d{2}, \d{1,2}:\d{2}) - ([^:]+): (.+)$/;
+        this.system = [
+          'end-to-end encrypted','Video call','Missed video call','Missed voice call','Voice call',
+          '<Media omitted>','Messages to this chat and calls are now secured','changed the subject',
+          'added','left','removed','null'
+        ];
+      }
+      isWA(t){ return /\[\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}:\d{2}\]/.test(t) || /\d{1,2}\/\d{1,2}\/\d{2}, \d{1,2}:\d{2} - /.test(t) }
+      parse(txt){
+        const lines = txt.split('\n');
+        const out = []; const authors = new Set();
+        let cur = null, buf = [];
+        for(let raw of lines){
+          let line = raw.trim(); if(!line) continue;
+          let m = this.re.exec(line), alt = false;
+          if(!m){ m = this.reAlt.exec(line); alt = !!m; }
+          if(m){
+            if(cur && buf.length && !this._sys(buf.join('\n'))){
+              cur.text = buf.join('\n'); out.push(cur); authors.add(cur.from);
+            }
+            const [, ts, sender, msg] = m; const date = this._ts(ts, alt);
+            cur = { from: sender.replace(/^~/,''), from_id: this._hash(sender), text: msg, date: date.toISOString(), id: Date.now() + Math.random().toString(36).slice(2) };
+            buf = [msg];
+          } else if(cur){ buf.push(line); }
+        }
+        if(cur && buf.length && !this._sys(buf.join('\n'))){ cur.text = buf.join('\n'); out.push(cur); authors.add(cur.from); }
+        return { messages: out, authors: [...authors] };
+      }
+      _sys(t){ return this.system.some(s => t.includes(s) || t.includes('\u200e')) }
+      _ts(ts, alt){
+        if(alt){
+          const [d,t] = ts.split(', '); const [mm,dd,yy] = d.split('/'); const [hh,mi] = t.split(':');
+          const full = +yy < 50 ? 2000 + +yy : 1900 + +yy; return new Date(full, +mm-1, +dd, +hh, +mi, 0);
+        }
+        const [d,t] = ts.split(', '); const [dd,mm,yy] = d.split('/'); const [hh,mi,ss] = t.split(':');
+        return new Date(+yy, +mm-1, +dd, +hh, +mi, +ss);
+      }
+      _hash(s){ let h=0; for(const c of s) h=(h<<5)-h+c.charCodeAt(0), h|=0; return String(Math.abs(h)); }
+    }
+
+    // Insight orchestration
+    class MirrorApp{
+      constructor(){
+        this.file = document.getElementById('file');
+        this.drop = document.getElementById('drop');
+        this.mainDrop = document.getElementById('main-drop');
+        this.wrapAuthors = document.getElementById('authorsWrap');
+        this.authors = document.getElementById('authors');
+        this.btnAnalyze = document.getElementById('analyze');
+        this.progress = document.getElementById('progress');
+        this.fill = document.getElementById('fill');
+        this.status = document.getElementById('status');
+        this.ok = document.getElementById('ok');
+        this.err = document.getElementById('err');
+        this.data = null; this.stats = {};
+        this._bind();
+      }
+      _bind(){
+        this.file.addEventListener('change',(e)=>{
+          const f = e.target.files && e.target.files[0];
+          if(f) this._ingestFile(f);
+        });
+        this.btnAnalyze.addEventListener('click',()=> this._analyze());
+
+        // Drop in modal
+        ['dragenter','dragover'].forEach(ev => this.drop.addEventListener(ev, e => { e.preventDefault(); if(e.dataTransfer) e.dataTransfer.dropEffect='copy'; }));
+        this.drop.addEventListener('drop',(e)=>{ e.preventDefault(); const f = e.dataTransfer?.files?.[0]; if(f){ this._ingestFile(f); } });
+
+        // Drop on main page
+        if(this.mainDrop){
+          ['dragenter','dragover'].forEach(ev => this.mainDrop.addEventListener(ev, e => { e.preventDefault(); if(e.dataTransfer) e.dataTransfer.dropEffect='copy'; }));
+          this.mainDrop.addEventListener('drop',(e)=>{ e.preventDefault(); const f = e.dataTransfer?.files?.[0]; if(f){ openUpload(); this._ingestFile(f); } });
+        }
+
+        // Update analyze button count on selection changes
+        this.authors.addEventListener('change',()=> this._updateAnalyzeCount());
+
+        // Add password validation on input
+        const passwordInputs = ['password', 'passwordConfirm'];
+        passwordInputs.forEach(id => {
+          document.getElementById(id).addEventListener('input', () => this._updateAnalyzeCount());
+        });
+      }
+      async _ingestFile(file){
+        this._progress(true,6,I18N.t('progress.reading')); this._hideMsgs();
+        this._clearPasswordFields(); // Clear password fields for new file
+        let txt;
+        try{
+          if(file.name.toLowerCase().endsWith('.zip')) txt = await this._fromZip(file);
+          else txt = await file.text();
+        }catch(er){ this._error(I18N.t('error.readFile',{err:er.message})); this._progress(false); return; }
+
+        const parser = new WhatsAppParser();
+        try{
+          if(parser.isWA(txt)) this.data = parser.parse(txt);
+          else this.data = JSON.parse(txt);
+        }catch(er){ this._error(I18N.t('error.parse')); this._progress(false); return; }
+
+        // Normalize Telegram message "text" (array of parts)
+        if(this.data && Array.isArray(this.data.messages)){
+          for(const m of this.data.messages){
+            if(Array.isArray(m.text)){ m.text = m.text.map(p => typeof p==='string' ? p : (p.text||'')).join(''); }
+          }
+        }
+
+        // Build author list
+        this._progress(true,40,I18N.t('progress.analyzing')); this.stats = {};
+        for(const m of (this.data.messages||[])){
+          if(!m.from || !m.text) continue;
+          const k = m.from; this.stats[k] = this.stats[k] || { count:0, id:m.from_id };
+          this.stats[k].count++;
+        }
+        this._renderAuthors();
+        this._progress(false);
+      }
+      async _fromZip(zipFile){
+        const buf = await zipFile.arrayBuffer(); const zip = await JSZip.loadAsync(buf); const txtEntries = [];
+        zip.forEach((p, e)=>{ if(p.toLowerCase().endsWith('.txt')) txtEntries.push(e); });
+        if(!txtEntries.length) throw new Error('No .txt found inside .zip');
+        return await txtEntries[0].async('text');
+      }
+      _renderAuthors(){
+        this.wrapAuthors.style.display = 'block'; this.authors.innerHTML = '';
+        Object.entries(this.stats).sort((a,b)=> b[1].count - a[1].count).forEach(([name, st])=>{
+          const row = document.createElement('label'); row.className = 'a';
+          const countStr = I18N.formatNumber(st.count) + ' ' + (I18N.lang==='ru' ? 'сообщений' : 'messages');
+          row.innerHTML = `<input type="checkbox" checked value="${name}"/> ${name} <span>${countStr}</span>`;
+          this.authors.appendChild(row);
+        });
+        this._updateAnalyzeCount();
+        this.btnAnalyze.disabled = false;
+      }
+      _updateAnalyzeCount(){
+        const picked = [...this.authors.querySelectorAll('input:checked')];
+        const total = picked.reduce((acc,el)=>{ const name = el.value; return acc + (this.stats[name]?.count||0); },0);
+        this.btnAnalyze.textContent = picked.length ? I18N.t('analyze.count',{count: total}) : I18N.t('analyze.selected');
+        this.btnAnalyze.disabled = picked.length === 0 || !this._validatePassword();
+      }
+
+      _validatePassword(){
+        const password = document.getElementById('password').value;
+        const passwordConfirm = document.getElementById('passwordConfirm').value;
+        const passwordError = document.getElementById('passwordError');
+
+        if (password.length < 6) {
+          passwordError.textContent = 'Пароль должен содержать минимум 6 символов';
+          passwordError.style.display = 'block';
+          return false;
+        }
+
+        if (password !== passwordConfirm) {
+          passwordError.textContent = 'Пароли не совпадают';
+          passwordError.style.display = 'block';
+          return false;
+        }
+
+        passwordError.style.display = 'none';
+        return true;
+      }
+      updateAnalyzeButton(){ this._updateAnalyzeCount(); }
+      async _analyze(){
+        console.log('Start analyze')
+        const picked = [...this.authors.querySelectorAll('input:checked')].map(i=>i.value);
+        if(!picked.length) return this._error(I18N.t('error.selectOne'));
+
+        // Validate password before proceeding
+        if (!this._validatePassword()) {
+          return this._error('Пожалуйста, исправьте ошибки в пароле');
+        }
+
+        const password = document.getElementById('password').value;
+        const filtered = (this.data.messages||[]).filter(m=> picked.includes(m.from)).map(m=>({ sender:m.from, text:m.text, date:m.date }));
+        // Create and wrap keypair using crypto.js functions
+        if (!window.MirrorCrypto) {
+            console.log('Crypto functions not loaded')
+            throw new Error('Crypto functions not loaded');
+        }
+
+        console.log('start create keypair')
+        const keypair = await window.MirrorCrypto.createAndWrapKeypair(password);
+        console.log(keypair)
+        this._progress(true,10,I18N.t('progress.preparing')); this.btnAnalyze.disabled = true; this._hideMsgs();
+        try{
+          const res = await fetch('/mirror/process/', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({
+              person_name: picked.join(', '),
+              chat: filtered,
+              keypair: keypair
+            })
+          });
+          const json = await res.json();
+          if(json.status === 'success'){
+            this._progress(true,100,I18N.t('progress.ready')); this._ok(I18N.t('uuid')+' '+json.uuid);
+            setTimeout(()=> location.href = json.url, 900);
+          } else { throw new Error(json.message || 'Server error'); }
+        }catch(er){ this._error(I18N.t('error.generic', er.message)); }
+        finally{ this.btnAnalyze.disabled = false; this._progress(false); }
+      }
+      _progress(on,pct=0,msg=''){
+        if(on){ this.progress.style.display='grid'; this.fill.style.width=pct+'%'; this.status.textContent=msg; }
+        else{ this.progress.style.display='none'; }
+      }
+      _hideMsgs(){ this.ok.style.display='none'; this.err.style.display='none'; }
+      _error(t){ this.err.textContent=t; this.err.style.display='block'; }
+      _ok(t){ this.ok.textContent=t; this.ok.style.display='block'; }
+
+      _clearPasswordFields(){
+        document.getElementById('password').value = '';
+        document.getElementById('passwordConfirm').value = '';
+        document.getElementById('passwordError').style.display = 'none';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded',()=>{
+      $modal = document.getElementById('upload');
+      I18N.bindToggle();
+      I18N.apply();
+      window.mirrorApp = new MirrorApp();
+    });
+  </script>
+
+  <script>
+    // Accessible tabs for Export section
+    (function(){
+      function setActive(btn){
+        const all = [...btn.parentElement.querySelectorAll('.tab')];
+        all.forEach(b=>{ b.classList.remove('is-active'); b.setAttribute('aria-selected','false'); });
+        btn.classList.add('is-active'); btn.setAttribute('aria-selected','true');
+        const targetId = btn.getAttribute('aria-controls');
+        const panels = [document.getElementById('panel-wa'), document.getElementById('panel-tg')];
+        panels.forEach(p=>{ p.hidden = p.id !== targetId; });
+        try{ localStorage.setItem('mirror-platform', btn.id); }catch(e){}
+      }
+      document.querySelectorAll('.tabs .tab').forEach(btn=>{
+        btn.addEventListener('click',()=> setActive(btn));
+        btn.addEventListener('keydown',e=>{
+          if(e.key==='ArrowRight' || e.key==='ArrowLeft'){
+            const buttons=[...btn.closest('.tabs').querySelectorAll('.tab')];
+            const i=buttons.indexOf(btn);
+            const next=e.key==='ArrowRight'?buttons[(i+1)%buttons.length]:buttons[(i-1+buttons.length)%buttons.length];
+            next.focus(); e.preventDefault();
+          }
+        });
+      });
+      const saved = (()=>{
+        try{ return localStorage.getItem('mirror-platform'); }catch(e){ return null; }
+      })();
+      if(saved && document.getElementById(saved)) setActive(document.getElementById(saved)); else setActive(document.getElementById('tab-wa'));
+    })();
+  </script>
+</body>
+</html>
