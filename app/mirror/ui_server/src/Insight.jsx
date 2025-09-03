@@ -129,9 +129,7 @@ class Insight extends Component {
     const pathParts = window.location.pathname.split('/').filter(part => part.length > 0)
     const uuid = pathParts[pathParts.length - 1]
 
-      console.log('decr', decrypting, decrypting.toString())
-
-    if (passwordPrompt) {
+      if (passwordPrompt) {
       return (
         <div className="insight-password-container">
           <div className="insight-password-card">
@@ -141,9 +139,6 @@ class Insight extends Component {
             <p className="insight-password-description">
               Для просмотра анализа необходимо ввести пароль
             </p>
-            <div style={{textAlign: 'center', marginBottom: '10px', fontSize: '12px', color: '#666'}}>
-              DEBUG: decrypting = {decrypting.toString()} {decrypting ? '1': '2'}
-            </div>
             {!data && (
               <p style={{color: 'orange', textAlign: 'center', marginBottom: '20px'}}>
                 Загрузка данных...
