@@ -50,12 +50,15 @@ class Insight extends Component {
       this.setState({ 
         data: result,
         hasStoredKeypair,
-        passwordPrompt: !hasStoredKeypair // Если есть сохраненный keypair, не показываем запрос пароля
+        passwordPrompt: !hasStoredKeypair && result.status === 'completed' // Показываем запрос пароля только если нет сохраненного keypair и анализ завершен
       })
-        console.log('Has stored keypair:', hasStoredKeypair)
-        console.log('Fetched data:' , result)
-      // Если есть сохраненный keypair, автоматически расшифровываем данные
-      if (hasStoredKeypair && result) {
+      
+      console.log('Has stored keypair:', hasStoredKeypair)
+      console.log('Fetched data:', result)
+      console.log('Status:', result.status)
+      
+      // Если есть сохраненный keypair и анализ завершен, автоматически расшифровываем данные
+      if (hasStoredKeypair && result && result.status === 'completed' && result.insights) {
         await this.autoDecryptWithStoredKeypair(uuid, result)
       }
     } catch (err) {
@@ -73,12 +76,24 @@ class Insight extends Component {
       
       // Загружаем сохраненный keypair
       const storedKeypair = loadKeypairFromStorage(uuid)
+
+        console.log('Loaded stored keypair:', storedKeypair)
       
-      if (!storedKeypair) {
-        console.error('Stored keypair not found')
+      if (!storedKeypair || !storedKeypair.sk) {
+        console.error('Stored keypair not found', storedKeypair)
         this.setState({ 
           passwordPrompt: true,
           passwordError: 'Сохраненный ключ не найден. Введите пароль вручную.'
+        })
+        return
+      }
+      
+      // Проверяем, что sk является Uint8Array
+      if (!(storedKeypair.sk instanceof Uint8Array)) {
+        console.error('Stored keypair sk is not Uint8Array:', storedKeypair.sk)
+        this.setState({ 
+          passwordPrompt: true,
+          passwordError: 'Сохраненный ключ поврежден. Введите пароль вручную.'
         })
         return
       }
@@ -306,6 +321,74 @@ class Insight extends Component {
       return (
         <div className="insight-no-data-container">
           Данные не найдены
+        </div>
+      )
+    }
+
+    // Обработка статусов анализа
+    if (data.status === 'processing') {
+      return (
+        <div className="insight-loading-container">
+          <div className="insight-processing-content">
+            <div className="insight-processing-spinner"></div>
+            <h2>Анализ в процессе...</h2>
+            <p>Пожалуйста, подождите, пока анализ будет завершен. Это может занять несколько минут.</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              style={{
+                marginTop: '20px',
+                padding: '10px 20px',
+                background: '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer'
+              }}
+            >
+              Обновить страницу
+            </button>
+          </div>
+        </div>
+      )
+    }
+
+    if (data.status === 'error') {
+      return (
+        <div className="insight-error-container">
+          <h2>Ошибка анализа</h2>
+          <p className="insight-error-message">
+            {data.error_message || 'Произошла ошибка при обработке анализа'}
+          </p>
+          <button onClick={() => window.location.reload()}>
+            Попробовать снова
+          </button>
+        </div>
+      )
+    }
+
+    // Если статус не 'completed', показываем загрузку
+    if (data.status !== 'completed') {
+      return (
+        <div className="insight-loading-container">
+          <div className="insight-processing-content">
+            <div className="insight-processing-spinner"></div>
+            <h2>Ожидание завершения анализа...</h2>
+            <p>Статус: {data.status}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              style={{
+                marginTop: '20px',
+                padding: '10px 20px',
+                background: '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer'
+              }}
+            >
+              Обновить страницу
+            </button>
+          </div>
         </div>
       )
     }

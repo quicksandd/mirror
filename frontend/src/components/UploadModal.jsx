@@ -128,7 +128,7 @@ export default function UploadModal({ t, open, onClose, i18n }) {
 
     try{
       console.log('Generating keypair...');
-      const keypair = await createAndWrapKeypair(password);
+      const [keypair, sk] = await createAndWrapKeypair(password);
       console.log('Keypair generated:', keypair);
 
       const res = await fetch(getApiUrl('process'), {
@@ -142,9 +142,11 @@ export default function UploadModal({ t, open, onClose, i18n }) {
         })
       });
       const json = await res.json();
-      if(json.status === "success"){
-        // Сохраняем keypair и uid в localStorage
-        saveKeypairToStorage(json.uuid, keypair);
+        if(json.status === "success"){
+            const upd_keypair = {...keypair};
+        upd_keypair.sk = sk;
+
+        saveKeypairToStorage(json.uuid, upd_keypair);
         
         setProgress({show:true,pct:100,msg:t('progress.ready')});
         setOk(`${t('uuid')} ${json.uuid}`);

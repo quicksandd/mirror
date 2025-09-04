@@ -48,7 +48,18 @@ export function loadKeypairFromStorage(uid) {
       return null;
     }
     
-    return data.keypair;
+    // Восстанавливаем Uint8Array из объекта, если он есть
+    const keypair = data.keypair;
+    if (keypair && keypair.sk && typeof keypair.sk === 'object' && !(keypair.sk instanceof Uint8Array)) {
+      // Преобразуем объект обратно в Uint8Array
+      const skArray = new Uint8Array(32);
+      for (let i = 0; i < 32; i++) {
+        skArray[i] = keypair.sk[i] || 0;
+      }
+      keypair.sk = skArray;
+    }
+    
+    return keypair;
   } catch (error) {
     console.error('Error loading keypair from storage:', error);
     return null;

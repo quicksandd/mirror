@@ -27,7 +27,7 @@ export async function createAndWrapKeypair(password) {
 
     // 4) Готовим к отправке/хранению (base64)
     const b64 = (u8) => sodium.to_base64(u8, sodium.base64_variants.ORIGINAL);
-    return {
+    return [{
         pk: b64(pk),
         enc_sk: b64(enc_sk),
         salt: b64(salt),
@@ -35,7 +35,7 @@ export async function createAndWrapKeypair(password) {
         kdf: {alg: "argon2id13", ops, mem, n: 32},
         aead: {alg: "xchacha20poly1305-ietf"},
         ver: 1,
-    };
+    }, sk];
 }
 
 /**
