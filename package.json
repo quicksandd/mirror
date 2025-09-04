@@ -1,0 +1,12 @@
+{
+  "name": "mirror-app",
+  "version": "1.0.0",
+  "description": "Mirror app with Django backend and React frontend",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "scripts": {
+    "build": "cd front && npm ci && npm run build:heroku"
+  }
+}

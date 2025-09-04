@@ -12,23 +12,31 @@ runserver:
 runserver_wm:
 	watchmedo auto-restart --patterns="*.py" --recursive -- python manage.py runserver
 
+build_frontend:
+	cd front && npm ci && npm run build:heroku
+	@echo "Frontend build complete!"
+
+frontend_dev:
+	cd front && npm run dev
+
+frontend_install:
+	cd front && npm install
+
+frontend_clean:
+	rm -rf front/node_modules
+	rm -rf static/frontend
+
 release:
 	set -e
+	$(MAKE) build_frontend
 	python manage.py migrate --noinput
 	python manage.py collectstatic --noinput
 
 setup:
-	if [ ! -d ".venv" ]; then
-		echo "Creating virtual environment..."
-		python -m venv .venv
-	fi
-	echo "Activating virtual environment..."
+	python -m venv .venv
 	source .venv/bin/activate
-	echo "Installing requirements..."
 	pip install -r requirements.txt
-	echo "Running migrations..."
 	$(MAKE) make_and_migrate
-	echo "Setup complete! Run 'python bot.py' to start the bot."
 	pre-commit install
 
 

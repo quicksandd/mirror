@@ -8,6 +8,7 @@ from app.mirror import views as mirror_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("", mirror_views.serve_react_app, name="react_app"),
 ]
 
 # Only include mirror URLs if Mirror is enabled

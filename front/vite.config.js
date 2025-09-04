@@ -6,12 +6,13 @@ export default defineConfig(({ mode }) => {
   // Load env file based on `mode` in the current working directory.
   const env = loadEnv(mode, process.cwd(), '')
   
-  const backendUrl = env.VITE_BACKEND_URL || 'http://localhost:8000'
+  const backendUrl = env.VITE_BACKEND_URL || (mode === 'production' ? '' : 'http://localhost:8000')
   
   console.log(`🚀 Vite config loaded with backend URL: ${backendUrl}`)
   
   return {
     plugins: [react()],
+    base: mode === 'production' ? '/static/frontend/' : '/',
     server: {
       port: parseInt(env.VITE_DEV_SERVER_PORT) || 5173,
       proxy: {
@@ -44,8 +45,9 @@ export default defineConfig(({ mode }) => {
       }
     },
     build: {
-      outDir: 'dist',
+      outDir: '../static/frontend',
       assetsDir: 'assets',
+      emptyOutDir: true,
     },
     define: {
       // Make environment variables available to the client

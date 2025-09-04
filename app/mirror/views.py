@@ -1,12 +1,14 @@
 import asyncio
 import json
 import logging
+import os
 import threading
 
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django.conf import settings
 
 from app import constants
 from .encryption import encrypt_for_user
@@ -21,6 +23,54 @@ def index(request):
     if not constants.MIRROR_ENABLED:
         raise Http404("Mirror endpoint is disabled")
     return render(request, 'mirror/index.html')
+
+
+def serve_react_app(request):
+    """Serve the React frontend application"""
+    try:
+        # Try multiple possible paths for the React app
+        possible_paths = [
+            os.path.join(settings.STATIC_ROOT, 'frontend', 'index.html'),
+            os.path.join(settings.BASE_DIR, 'static', 'frontend', 'index.html'),
+            os.path.join(settings.BASE_DIR, 'staticfiles', 'frontend', 'index.html'),
+        ]
+        
+        react_app_path = None
+        for path in possible_paths:
+            if os.path.exists(path):
+                react_app_path = path
+                break
+        
+        if react_app_path:
+            with open(react_app_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            return HttpResponse(content, content_type='text/html')
+        else:
+            # Fallback to a simple message if React app is not built
+            return HttpResponse("""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Mirror App</title>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+            </head>
+            <body>
+                <h1>Mirror App</h1>
+                <p>Frontend is being built. Please wait a moment and refresh the page.</p>
+                <p>If this message persists, please contact support.</p>
+                <p>Debug info: Looking for React app in:</p>
+                <ul>
+                    <li>{}</li>
+                    <li>{}</li>
+                    <li>{}</li>
+                </ul>
+            </body>
+            </html>
+            """.format(*possible_paths), content_type='text/html')
+    except Exception as e:
+        log.error(f"Error serving React app: {e}")
+        return HttpResponse(f"Error loading application: {str(e)}", status=500)
 
 
 @csrf_exempt

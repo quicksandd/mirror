@@ -82,11 +82,13 @@ patient_avatars/
 *.sql
 
 # Vite UI app artifacts
-ui_server/node_modules/
-ui_server/dist/
-ui_server/.vite/
-ui_server/.eslintcache
-ui_server/npm-debug.log*
-ui_server/yarn-debug.log*
-ui_server/yarn-error.log*
-ui_server/pnpm-debug.log*
+front/node_modules/
+front/dist/
+front/.vite/
+front/.eslintcache
+front/npm-debug.log*
+front/yarn-debug.log*
+front/yarn-error.log*
+front/pnpm-debug.log*
+
+static/frontend
