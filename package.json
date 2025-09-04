@@ -7,8 +7,8 @@
     "npm": ">=8.0.0"
   },
   "scripts": {
-    "build": "cd front && npm ci && npm run build:heroku",
-    "heroku-postbuild": "cd front && npm ci && npm run build:heroku"
+    "build": "cd frontend && npm ci && npm run build:heroku",
+    "heroku-postbuild": "cd frontend && npm ci && npm run build:heroku"
   },
   "dependencies": {
     "jszip": "^3.10.1",
