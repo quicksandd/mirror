@@ -1,5 +1,5 @@
 import React from "react";
-import { config } from "../config.js";
+import { config, getUiAssetUrl } from "../config.js";
 
 export default function Trust({ t }) {
   return (
@@ -21,8 +21,8 @@ export default function Trust({ t }) {
 
         <div style={{display:"grid",gap:32,gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",maxWidth:800,margin:"0 auto"}}>
           {[
-            {name:"Alexander Chisler", img:"/ui/founder-alexander.jpg", cap:t('founder1.caption'), link:"https://www.linkedin.com/in/alexander-chisler/"},
-            {name:"Sergey Ibragimov", img:"/ui/founder-sergey.jpg", cap:t('founder2.caption'), link:"https://www.linkedin.com/in/sergei-ibragimov-724227aa/?originalSubdomain=ru"},
+            {name:"Alexander Chisler", img:getUiAssetUrl("founder-alexander.jpg"), cap:t('founder1.caption'), link:"https://www.linkedin.com/in/alexander-chisler/"},
+            {name:"Sergey Ibragimov", img:getUiAssetUrl("founder-sergey.jpg"), cap:t('founder2.caption'), link:"https://www.linkedin.com/in/sergei-ibragimov-724227aa/?originalSubdomain=ru"},
           ].map((p)=>(
             <div key={p.name}
               style={{

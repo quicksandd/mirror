@@ -116,8 +116,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Add STATICFILES_DIRS to find our custom static files
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-    BASE_DIR / 'static' / 'frontend',  # Add frontend build directory
+    BASE_DIR / 'static' / 'frontend',  # Frontend build directory
 ]
 
 # Enable WhiteNoise's GZip compression

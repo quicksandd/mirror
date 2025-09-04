@@ -12,7 +12,8 @@ export default defineConfig(({ mode }) => {
   
   return {
     plugins: [react()],
-    base: mode === 'production' ? '/static/frontend/' : '/',
+
+    base: process.env.NODE_ENV === 'development' ? '/' : '/static/',
     server: {
       port: parseInt(env.VITE_DEV_SERVER_PORT) || 5173,
       proxy: {

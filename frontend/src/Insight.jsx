@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import WikiAnalysis from './components/WikiAnalysis.jsx'
 import { getApiUrl } from './config.js'
 import { unwrapPrivateKey, decryptDataFromServer } from './utils/crypto.js'
+import { loadKeypairFromStorage, hasKeypairInStorage, saveKeypairToStorage } from './utils/storage.js'
 import './styles/wiki.css'
 import './styles/insight.css'
 
@@ -16,7 +17,8 @@ class Insight extends Component {
       password: '',
       passwordError: '',
       decryptedInsights: null,
-      decrypting: false
+      decrypting: false,
+      hasStoredKeypair: false
     }
     this.passwordRef = React.createRef()
   }
@@ -41,12 +43,78 @@ class Insight extends Component {
       }
       
       const result = await response.json()
-      this.setState({ data: result })
+      
+      // Проверяем, есть ли сохраненный keypair для этого uid
+      const hasStoredKeypair = hasKeypairInStorage(uuid)
+      
+      this.setState({ 
+        data: result,
+        hasStoredKeypair,
+        passwordPrompt: !hasStoredKeypair // Если есть сохраненный keypair, не показываем запрос пароля
+      })
+        console.log('Has stored keypair:', hasStoredKeypair)
+        console.log('Fetched data:' , result)
+      // Если есть сохраненный keypair, автоматически расшифровываем данные
+      if (hasStoredKeypair && result) {
+        await this.autoDecryptWithStoredKeypair(uuid, result)
+      }
     } catch (err) {
       console.error('Error fetching insights:', err)
       this.setState({ error: err.message })
     } finally {
       this.setState({ loading: false })
+    }
+  }
+
+  autoDecryptWithStoredKeypair = async (uuid, data) => {
+    try {
+      console.log('Attempting to auto-decrypt with stored keypair')
+      this.setState({ decrypting: true })
+      
+      // Загружаем сохраненный keypair
+      const storedKeypair = loadKeypairFromStorage(uuid)
+      
+      if (!storedKeypair) {
+        console.error('Stored keypair not found')
+        this.setState({ 
+          passwordPrompt: true,
+          passwordError: 'Сохраненный ключ не найден. Введите пароль вручную.'
+        })
+        return
+      }
+      
+      // Используем переданные данные для расшифровки
+      if (!data || !data.insights) {
+        console.error('No insights data to decrypt')
+        this.setState({ 
+          passwordPrompt: true,
+          passwordError: 'Данные для расшифровки недоступны'
+        })
+        return
+      }
+      
+      // Расшифровываем данные с помощью сохраненного keypair
+      console.log('Attempting to decrypt with stored keypair')
+      const decryptedData = await decryptDataFromServer(data.insights, storedKeypair.sk)
+      
+      // Парсим расшифрованные JSON данные
+      const insightsText = new TextDecoder().decode(decryptedData)
+      const parsedInsights = JSON.parse(insightsText)
+      
+      this.setState({ 
+        decryptedInsights: parsedInsights,
+        passwordPrompt: false,
+        decrypting: false
+      })
+      
+      console.log('Successfully decrypted with stored keypair')
+    } catch (err) {
+      console.error('Auto-decryption error:', err)
+      this.setState({ 
+        passwordPrompt: true,
+        passwordError: 'Ошибка автоматической расшифровки. Введите пароль вручную.',
+        decrypting: false
+      })
     }
   }
 
@@ -82,6 +150,11 @@ class Insight extends Component {
       // Parse the decrypted JSON data
       const insightsText = new TextDecoder().decode(decryptedData)
       const parsedInsights = JSON.parse(insightsText)
+      
+      // Сохраняем keypair в localStorage для будущего использования
+      const pathParts = window.location.pathname.split('/').filter(part => part.length > 0)
+      const uuid = pathParts[pathParts.length - 1]
+      saveKeypairToStorage(uuid, data.keypair)
       
       this.setState({ 
         decryptedInsights: parsedInsights,
@@ -122,7 +195,8 @@ class Insight extends Component {
       password, 
       passwordError, 
       decryptedInsights, 
-      decrypting 
+      decrypting,
+      hasStoredKeypair
     } = this.state
 
     // Get UUID from URL path
@@ -134,56 +208,64 @@ class Insight extends Component {
         <div className="insight-password-container">
           <div className="insight-password-card">
             <h2 className="insight-password-title">
-              Введите пароль для доступа
+              {hasStoredKeypair ? 'Автоматическая расшифровка...' : 'Введите пароль для доступа'}
             </h2>
             <p className="insight-password-description">
-              Для просмотра анализа необходимо ввести пароль
+              {hasStoredKeypair 
+                ? 'Используется сохраненный ключ для автоматической расшифровки'
+                : 'Для просмотра анализа необходимо ввести пароль'
+              }
             </p>
             {!data && (
               <p style={{color: 'orange', textAlign: 'center', marginBottom: '20px'}}>
                 Загрузка данных...
               </p>
             )}
-            <div className="insight-password-input-container">
-              <input
-                ref={this.passwordRef}
-                type="password"
-                value={password}
-                onChange={this.handlePasswordChange}
-                placeholder="Введите пароль"
-                className="insight-password-input"
-                disabled={decrypting}
-                onKeyPress={this.handleKeyPress}
-              />
-              {passwordError && (
-                <p className="insight-password-error">
-                  {passwordError}
-                </p>
-              )}
-            </div>
-            <div className="insight-password-buttons">
-              <button
-                onClick={this.handlePasswordCancel}
-                className="insight-password-cancel-btn"
-                disabled={decrypting}
-              >
-                Отмена
-              </button>
-              <button
-                onClick={this.handlePasswordSubmit}
-                className="insight-password-submit-btn"
-                disabled={decrypting || !data}
-              >
-                {decrypting ? (
-                  <>
-                    <span className="insight-spinner"></span>
-                    Расшифровка...
-                  </>
-                ) : (
-                  'Продолжить'
-                )}
-              </button>
-            </div>
+            
+            {!hasStoredKeypair && (
+              <>
+                <div className="insight-password-input-container">
+                  <input
+                    ref={this.passwordRef}
+                    type="password"
+                    value={password}
+                    onChange={this.handlePasswordChange}
+                    placeholder="Введите пароль"
+                    className="insight-password-input"
+                    disabled={decrypting}
+                    onKeyPress={this.handleKeyPress}
+                  />
+                  {passwordError && (
+                    <p className="insight-password-error">
+                      {passwordError}
+                    </p>
+                  )}
+                </div>
+                <div className="insight-password-buttons">
+                  <button
+                    onClick={this.handlePasswordCancel}
+                    className="insight-password-cancel-btn"
+                    disabled={decrypting}
+                  >
+                    Отмена
+                  </button>
+                  <button
+                    onClick={this.handlePasswordSubmit}
+                    className="insight-password-submit-btn"
+                    disabled={decrypting || !data}
+                  >
+                    {decrypting ? (
+                      <>
+                        <span className="insight-spinner"></span>
+                        Расшифровка...
+                      </>
+                    ) : (
+                      'Продолжить'
+                    )}
+                  </button>
+                </div>
+              </>
+            )}
             
             {decrypting && (
               <div className="insight-decrypting-overlay">

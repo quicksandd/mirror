@@ -1,5 +1,5 @@
 import React from "react";
-import { config } from "../config.js";
+import { config, getUiAssetUrl } from "../config.js";
 
 export default function Hero({ t, onOpen }) {
     return (
@@ -23,9 +23,9 @@ export default function Hero({ t, onOpen }) {
                 </div>
                 <div className="mock" aria-hidden="true">
                     <div className="chatcard">
-                        <img id="hero-chat-img" src="/ui/MessagesExample.png" alt={t("hero.chat.alt")} />
+                        <img id="hero-chat-img" src={getUiAssetUrl("MessagesExample.png")} alt={t("hero.chat.alt")} />
                     </div>
-                    <img className="wikishot" id="hero-wiki-img" src="/ui/WikiExample.png" alt={t("hero.wiki.alt")} />
+                    <img className="wikishot" id="hero-wiki-img" src={getUiAssetUrl("WikiExample.png")} alt={t("hero.wiki.alt")} />
                 </div>
             </div>
         </section>

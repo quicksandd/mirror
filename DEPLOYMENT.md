@@ -121,6 +121,8 @@ python manage.py runserver
 make frontend_dev
 ```
 
+**Note**: Frontend files are now in the `frontend/` directory (moved from `front/`).
+
 ### Local Production Build Test
 ```bash
 # Build frontend

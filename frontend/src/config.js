@@ -18,7 +18,10 @@ export const config = {
     insights: '/mirror/api/insights/',
     static: '/static',
     media: '/media'
-  }
+  },
+  
+  // UI assets base path
+  uiAssetsPath: import.meta.env.DEV ? '/ui' : '/static/ui'
 };
 
 // Helper function to get full API URL
@@ -41,4 +44,11 @@ export const getApiUrl = (endpoint) => {
   const cleanApiPath = apiPath.startsWith('/') ? apiPath : `/${apiPath}`;
   
   return `${cleanBaseUrl}${cleanApiPath}`;
+};
+
+// Helper function to get UI asset URL
+export const getUiAssetUrl = (assetPath) => {
+  // Remove leading slash if present
+  const cleanPath = assetPath.startsWith('/') ? assetPath.slice(1) : assetPath;
+  return `${config.uiAssetsPath}/${cleanPath}`;
 };

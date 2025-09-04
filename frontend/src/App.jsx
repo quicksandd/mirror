@@ -9,6 +9,7 @@ import Privacy from "./components/Privacy.jsx";
 import Trust from "./components/Trust.jsx";
 import Footer from "./components/Footer.jsx";
 import UploadModal from "./components/UploadModal.jsx";
+import KeypairManager from "./components/KeypairManager.jsx";
 import Insight from "./Insight.jsx";
 
 export default function App(){
@@ -17,8 +18,11 @@ export default function App(){
   const setLang = (l)=>{ i18n.setLang(l); force(x=>x+1); };
 
   const [open, setOpen] = useState(false);
+  const [keypairManagerOpen, setKeypairManagerOpen] = useState(false);
   const onOpen = ()=> setOpen(true);
   const onClose = ()=> setOpen(false);
+  const onKeypairManagerOpen = ()=> setKeypairManagerOpen(true);
+  const onKeypairManagerClose = ()=> setKeypairManagerOpen(false);
 
   const t = (k, arg) => i18n.t(k, arg);
 
@@ -31,7 +35,7 @@ export default function App(){
         <Route path="/mirror" element={<Navigate to="/" replace />} />
         <Route path="/" element={
           <>
-            <Nav t={t} lang={i18n.lang} setLang={setLang} onOpen={onOpen} />
+            <Nav t={t} lang={i18n.lang} setLang={setLang} onOpen={onOpen} onKeypairManagerOpen={onKeypairManagerOpen} />
             <Hero t={t} onOpen={onOpen} />
             <ExportSection t={t} />
             <Step2Preview t={t} onOpen={onOpen} />
@@ -39,6 +43,7 @@ export default function App(){
             <Trust t={t} />
             <Footer t={t} />
             <UploadModal t={t} open={open} onClose={onClose} i18n={i18n} />
+            <KeypairManager open={keypairManagerOpen} onClose={onKeypairManagerClose} />
           </>
         } />
       </Routes>

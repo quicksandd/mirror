@@ -3,6 +3,7 @@ import JSZip from "jszip";
 import { WhatsAppParser } from "../utils/WhatsAppParser.js";
 import { getApiUrl } from "../config.js";
 import {createAndWrapKeypair} from "../utils/crypto.js";
+import { saveKeypairToStorage } from "../utils/storage.js";
 
 export default function UploadModal({ t, open, onClose, i18n }) {
   const fileRef = useRef(null);
@@ -142,6 +143,9 @@ export default function UploadModal({ t, open, onClose, i18n }) {
       });
       const json = await res.json();
       if(json.status === "success"){
+        // Сохраняем keypair и uid в localStorage
+        saveKeypairToStorage(json.uuid, keypair);
+        
         setProgress({show:true,pct:100,msg:t('progress.ready')});
         setOk(`${t('uuid')} ${json.uuid}`);
         setTimeout(()=>{ location.href = json.url; }, 900);

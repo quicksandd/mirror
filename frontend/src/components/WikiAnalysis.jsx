@@ -218,6 +218,8 @@ export default function WikiAnalysis({
     }
   }, [status])
 
+    // console.log(status, insights)
+
   return (
     <div>
       {/* Header */}

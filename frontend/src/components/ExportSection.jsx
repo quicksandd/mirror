@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { getUiAssetUrl } from "../config.js";
 
 function WhatsAppPanel({ t }) {
   return (
@@ -7,7 +8,7 @@ function WhatsAppPanel({ t }) {
         {[1,2,3].map((n)=>(
           <div className="step" key={n}>
             <div className="phone">
-              <img src={`/ui/Instruction${n}.png`} alt={t(`wa.s${n}.alt`)} loading="lazy" />
+              <img src={getUiAssetUrl(`Instruction${n}.png`)} alt={t(`wa.s${n}.alt`)} loading="lazy" />
             </div>
             <div className="step-content">
               <div className="badge">{n}</div>
