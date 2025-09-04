@@ -3,9 +3,6 @@ make_and_migrate:
 	python manage.py migrate
 	echo "Migrations completed"
 
-runbot:
-	watchmedo auto-restart --patterns="*.py" --recursive -- python bot.py
-
 runserver:
 	python manage.py runserver
 

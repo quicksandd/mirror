@@ -94,20 +94,28 @@ static/
 
 ## Development
 
+### Available Makefile Commands
+```bash
+make build_frontend    # Build frontend for production
+make frontend_dev      # Start frontend development server
+make frontend_install  # Install frontend dependencies
+make frontend_clean    # Clean frontend build and node_modules
+make release          # Full release process (build + migrate + collectstatic)
+```
+
 ### Local Development
 ```bash
 # Backend
 python manage.py runserver
 
 # Frontend (separate terminal)
-cd front
-npm run dev
+make frontend_dev
 ```
 
 ### Local Production Build Test
 ```bash
 # Build frontend
-./build_frontend.sh
+make build_frontend
 
 # Collect static files
 python manage.py collectstatic
