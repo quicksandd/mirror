@@ -25,7 +25,7 @@ def index(request):
     return render(request, 'mirror/index.html')
 
 
-def serve_react_app(request):
+def serve_react_app(request, uuid=None):
     """Serve the React frontend application"""
     try:
         # Try multiple possible paths for the React app

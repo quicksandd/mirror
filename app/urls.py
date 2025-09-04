@@ -14,6 +14,9 @@ urlpatterns = [
 # Only include mirror URLs if Mirror is enabled
 if constants.MIRROR_ENABLED:
     urlpatterns.append(path("mirror/", include("app.mirror.urls")))
+    # Add catch-all route for React app at /mirror/insights/ to handle client-side routing
+    urlpatterns.append(path("mirror/insights/", mirror_views.serve_react_app, name="mirror_insights"))
+    urlpatterns.append(path("mirror/insights/<uuid:uuid>/", mirror_views.serve_react_app, name="mirror_insights_with_uuid"))
 
 # Serve media files in development
 if settings.DEBUG:

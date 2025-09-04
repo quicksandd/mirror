@@ -70,10 +70,19 @@ static/
 
 ## URL Routing
 
-- `/` - Serves the React frontend
+- `/` - Serves the React frontend (main app)
+- `/mirror/insights/<uuid>` - Serves the React frontend (insights page)
 - `/mirror/api/*` - Django API endpoints
 - `/admin/` - Django admin
 - `/static/*` - Static files (CSS, JS, images)
+
+### URL Flow:
+1. User visits `/mirror/insights/5d1a5f00-3577-454f-981e-9bd6d7978ed6/`
+2. Django serves the React app (not the API)
+3. React router handles the route and shows `Insight.jsx` component
+4. React component makes API call to `/mirror/api/insights/5d1a5f00-3577-454f-981e-9bd6d7978ed6/`
+5. Django API returns the data
+6. React component displays the insights
 
 ## Troubleshooting
 
