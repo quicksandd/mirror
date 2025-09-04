@@ -215,26 +215,26 @@ li {
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
-  gap: 1em;
-  padding: 1em;
+  gap: 0.5em;
+  padding: 0.5em;
 }
 
 /* Sidebar */
 .wiki-sidebar {
-  width: 200px;
+  width: 180px;
   flex-shrink: 0;
   position: sticky;
-  top: 1em;
+  top: 0.5em;
   height: fit-content;
-  max-height: calc(100vh - 2em);
+  max-height: calc(100vh - 1em);
   overflow-y: auto;
 }
 
 .wiki-tools {
   background: #f8f9fa;
   border: 1px solid #a2a9b1;
-  padding: 0.5em;
-  margin-bottom: 1em;
+  padding: 0.3em;
+  margin-bottom: 0.8em;
 }
 
 .wiki-tools h3 {
@@ -252,17 +252,17 @@ li {
 }
 
 .wiki-tools li {
-  margin: 0.25em 0;
+  margin: 0.15em 0;
 }
 
 .wiki-tools ul ul {
-  margin-left: 1em;
-  margin-top: 0.25em;
-  margin-bottom: 0.5em;
+  margin-left: 0.6em;
+  margin-top: 0.2em;
+  margin-bottom: 0.4em;
 }
 
 .wiki-tools ul ul li {
-  margin: 0.15em 0;
+  margin: 0.1em 0;
   font-size: 0.9em;
 }
 
@@ -276,7 +276,7 @@ li {
   text-decoration: none;
   font-size: 0.8em;
   transition: all 0.2s ease;
-  padding: 0.2em 0.4em 0.2em 0.6em;
+  padding: 0.15em 0.3em 0.15em 0.4em;
   border-radius: 3px;
   position: relative;
 }
@@ -304,6 +304,7 @@ li {
 .wiki-content {
   flex: 1;
   min-width: 0;
+  padding-left: 0.5em;
 }
 
 /* Article title */
@@ -513,14 +514,14 @@ li {
   }
   
   .wiki-processing {
-    padding: 1em 0;
+    padding: 0.5em 0;
   }
   
   .processing-info {
     flex-direction: column;
     text-align: center;
-    gap: 1.5em;
-    padding: 1.5em;
+    gap: 1em;
+    padding: 1em;
   }
   
   .processing-icon {
@@ -529,11 +530,11 @@ li {
   }
   
   .processing-content {
-    gap: 2em;
+    gap: 1.5em;
   }
   
   .processing-status {
-    padding: 1.5em;
+    padding: 1em;
   }
 
   .wiki-header {
@@ -563,22 +564,22 @@ li {
 
   .wiki-container {
     flex-direction: column;
-    padding: 1em;
-    gap: 1em;
+    padding: 0.5em;
+    gap: 0.5em;
   }
 
   .wiki-sidebar {
     width: 100%;
     order: 2;
-    margin-top: 1em;
+    margin-top: 0.5em;
     position: static;
     max-height: none;
     overflow-y: visible;
   }
 
   .wiki-tools {
-    margin-bottom: 0.5em;
-    padding: 0.75em;
+    margin-bottom: 0.3em;
+    padding: 0.5em;
   }
 
   .wiki-tools h3 {
@@ -659,6 +660,7 @@ li {
 
   .wiki-content {
     order: 1;
+    padding-left: 0;
   }
 
   .wiki-title {
@@ -730,26 +732,37 @@ li {
 
   .wiki-section h2 {
     font-size: 1.4em;
-    margin: 1.5em 0 0.75em 0;
-    padding-bottom: 0.5em;
+    margin: 1.2em 0 0.6em 0;
+    padding-bottom: 0.4em;
   }
 
   .wiki-section h3 {
     font-size: 1.2em;
-    margin: 1.2em 0 0.5em 0;
+    margin: 1em 0 0.4em 0;
   }
 
   .wiki-section p {
-    margin: 0.75em 0;
+    margin: 0.6em 0;
     line-height: 1.6;
   }
 
+  /* Mobile pattern items */
+  .pattern-item, .transformation-item, .prediction-item, .growth-item, .recommendation-item {
+    padding: 0.6em;
+    margin-bottom: 0.8em;
+  }
+
+  .pattern-icon, .transformation-icon, .prediction-icon, .growth-icon, .recommendation-icon {
+    width: 16px;
+    height: 16px;
+  }
+
   .wiki-section ul {
-    margin: 0.75em 0 0.75em 1.5em;
+    margin: 0.6em 0 0.6em 1.2em;
   }
 
   .wiki-section li {
-    margin: 0.5em 0;
+    margin: 0.4em 0;
     line-height: 1.5;
   }
 
@@ -799,6 +812,20 @@ li {
 
   .wiki-container {
     padding: 0.25em;
+  }
+
+  /* Small mobile pattern items */
+  .pattern-item, .transformation-item, .prediction-item, .growth-item, .recommendation-item {
+    padding: 0.5em;
+    margin-bottom: 0.6em;
+    flex-direction: column;
+    gap: 0.5em;
+  }
+
+  .pattern-icon, .transformation-icon, .prediction-icon, .growth-icon, .recommendation-icon {
+    width: 14px;
+    height: 14px;
+    margin-top: 0;
   }
 
   .wiki-nav {
@@ -1006,31 +1033,42 @@ li {
 
 /* Pattern and transformation items - Wikipedia style */
 .pattern-item, .transformation-item, .prediction-item, .growth-item, .recommendation-item {
-  margin-bottom: 0.8em;
-  padding: 0.5em 0;
-  border-bottom: 1px solid #e1e5e9;
+  margin-bottom: 1em;
+  padding: 0.8em;
+  background: #f8f9fa;
+  border: 1px solid #e1e5e9;
+  border-radius: 6px;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8em;
 }
 
 .pattern-item:last-child, .transformation-item:last-child, .prediction-item:last-child, .growth-item:last-child, .recommendation-item:last-child {
-  border-bottom: none;
+  margin-bottom: 0;
 }
 
 .pattern-icon, .transformation-icon, .prediction-icon, .growth-icon, .recommendation-icon {
-  display: inline-block;
-  margin-right: 0.5em;
-  font-size: 1em;
-  color: #666;
+  width: 20px;
+  height: 20px;
+  background: #e1e5e9;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 0.2em;
 }
 
 .pattern-content, .transformation-content, .prediction-content, .growth-content, .recommendation-content {
-  display: inline;
+  flex: 1;
 }
 
 .pattern-content p, .transformation-content p, .prediction-content p, .growth-content p, .recommendation-content p {
   margin: 0;
   color: #222;
   line-height: 1.6;
-  display: inline;
+}
+
+/* Container styles */
+.patterns-container, .transformations-container, .predictions-container, .growth-container, .recommendations-container {
+  margin: 1em 0;
 }
 
 /* Processing state styling */
@@ -1330,8 +1368,8 @@ textarea {
 .wiki-section h1 {
   border-bottom: 3px solid #a2a9b1;
   padding-bottom: 0.5em;
-  margin-top: 2em;
-  margin-bottom: 1em;
+  margin-top: 1.5em;
+  margin-bottom: 0.8em;
 }
 
 .wiki-section h1:first-of-type {
@@ -1353,14 +1391,14 @@ textarea {
 .section-divider {
   height: 2px;
   background: linear-gradient(to right, transparent, #a2a9b1, transparent);
-  margin: 2em 0;
+  margin: 1.5em 0;
   border: none;
 }
 
 .subsection-divider {
   height: 1px;
   background: #e1e5e9;
-  margin: 1.5em 0;
+  margin: 1em 0;
   border: none;
 }
 
