@@ -13,10 +13,10 @@ export default function Nav({ t, lang, setLang, onOpen, onKeypairManagerOpen }) 
             {t("nav.github")}
           </a>
           <div className="lang-switch" role="group" aria-label="Смена языка">
-            <button className={`btn ${lang==='ru'?'btn--primary':''}`} onClick={()=>setLang('ru')}>RU</button>
-            <button className={`btn ${lang==='en'?'btn--primary':''}`} onClick={()=>setLang('en')}>EN</button>
+            <button className={`btn ${lang==='ru'?'btn--primary':'btn--secondary'}`} onClick={()=>setLang('ru')}>RU</button>
+            <button className={`btn ${lang==='en'?'btn--primary':'btn--secondary'}`} onClick={()=>setLang('en')}>EN</button>
           </div>
-          <button className="btn" onClick={onKeypairManagerOpen} style={{marginRight: "8px"}}>
+          <button className="btn btn--secondary" onClick={onKeypairManagerOpen}>
             🔑 Ключи
           </button>
           <button className="btn btn--primary" onClick={onOpen}>

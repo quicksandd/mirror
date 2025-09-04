@@ -40,8 +40,8 @@ function TelegramPanel({ t }) {
               </div>
             </div>
           ))}
-          <div className="card" style={{background:"#fff", border:"1px solid var(--line)", textAlign:"left"}}>
-            <div className="step-title" style={{marginBottom:6}}>{t('tg.official.title')}</div>
+          <div className="card tg-official-guide">
+            <div className="step-title">{t('tg.official.title')}</div>
             <div className="step-note" dangerouslySetInnerHTML={{__html: t('tg.official.note')}} />
           </div>
         </div>

@@ -13,9 +13,9 @@ export default function Step2Preview({ t, onOpen }) {
           <label className="a"><input type="checkbox" disabled /> Notes to self <span>219 сообщений</span></label>
         </div>
         <div className="sub">{t('preview.sub')}</div>
-        <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+        <div className="preview-actions">
           <button className="btn btn--primary" onClick={onOpen}>{t('preview.upload')}</button>
-          <a className="btn" href="#privacy">{t('preview.privacy')}</a>
+          <a className="btn btn--secondary" href="#privacy">{t('preview.privacy')}</a>
         </div>
       </div>
     </section>

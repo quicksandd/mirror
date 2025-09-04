@@ -1,4 +1,25 @@
 
+/* CSS Variables for modern design */
+:root {
+  --ink: #111315;
+  --sub: rgba(17,19,21,0.72);
+  --muted: rgba(17,19,21,0.56);
+  --line: rgba(17,19,21,0.10);
+  --bg: #fff;
+  --bg-soft: #f7f8f9;
+  --brand: #0f172a;
+  --brand-2: #1f2937;
+  --ok: #059669;
+  --ok-2: #10b981;
+  --radius-xl: 20px;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --shadow-1: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-2: 0 8px 36px rgba(0,0,0,0.08);
+  --shadow-3: 0 18px 60px rgba(0,0,0,0.12);
+  --ring: #2563eb;
+}
+
 /* Reset and base styles */
 * {
   margin: 0;
@@ -32,10 +53,6 @@ a {
   text-decoration: none;
   color: #0645ad;
   background: none;
-}
-
-a:visited {
-  color: #0b0080;
 }
 
 a:active {
@@ -265,10 +282,11 @@ li {
 }
 
 .wiki-tools a.active {
-  background-color: #e6f3ff;
-  color: #0645ad;
-  font-weight: bold;
-  border-left: 3px solid #0645ad;
+  background-color: var(--ring);
+  color: white;
+  font-weight: 700;
+  border-color: var(--ring);
+  box-shadow: var(--shadow-2);
 }
 
 .wiki-tools a.active::before {
@@ -490,8 +508,32 @@ li {
 @media (max-width: 768px) {
   body {
     font-size: 16px;
-    line-height: 1.5;
+    line-height: 1.7;
     padding: 0;
+  }
+  
+  .wiki-processing {
+    padding: 1em 0;
+  }
+  
+  .processing-info {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.5em;
+    padding: 1.5em;
+  }
+  
+  .processing-icon {
+    font-size: 2.5em;
+    margin-top: 0;
+  }
+  
+  .processing-content {
+    gap: 2em;
+  }
+  
+  .processing-status {
+    padding: 1.5em;
   }
 
   .wiki-header {
@@ -521,8 +563,8 @@ li {
 
   .wiki-container {
     flex-direction: column;
-    padding: 0.5em;
-    gap: 0.5em;
+    padding: 1em;
+    gap: 1em;
   }
 
   .wiki-sidebar {
@@ -879,6 +921,255 @@ li {
   .infobox-value {
     width: 100%;
   }
+}
+
+/* Timeline and content improvements - Wikipedia style */
+.timeline-period {
+  background: #f8f9fa;
+  border: 1px solid #a2a9b1;
+  padding: 1.5em;
+  margin-bottom: 2em;
+}
+
+.period-header {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  margin-bottom: 1.5em;
+}
+
+.period-number {
+  width: 32px;
+  height: 32px;
+  background: #0645ad;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+
+.period-title h3 {
+  margin: 0;
+  color: #000;
+  font-size: 1.4em;
+  font-weight: bold;
+}
+
+.period-dates {
+  color: #54595d;
+  font-size: 0.9em;
+  font-weight: normal;
+  margin-top: 0.3em;
+}
+
+.period-section {
+  margin-bottom: 2em;
+  padding: 0.5em 0;
+}
+
+.period-section h4 {
+  color: #000;
+  font-size: 1.1em;
+  margin-bottom: 0.8em;
+  font-weight: bold;
+  border-bottom: 1px solid #e1e5e9;
+  padding-bottom: 0.3em;
+}
+
+.period-section p {
+  margin: 0.5em 0;
+  color: #222;
+  line-height: 1.6;
+}
+
+.event-list, .pattern-list {
+  margin: 0.8em 0 0.8em 1.8em;
+}
+
+.event-list li, .pattern-list li {
+  margin-bottom: 0.6em;
+  color: #222;
+  line-height: 1.5;
+}
+
+.no-data {
+  color: #666;
+  font-style: italic;
+  font-size: 0.9em;
+  margin: 0.5em 0;
+  padding: 0.5em;
+  background: #f8f9fa;
+  border-left: 3px solid #a2a9b1;
+}
+
+/* Pattern and transformation items - Wikipedia style */
+.pattern-item, .transformation-item, .prediction-item, .growth-item, .recommendation-item {
+  margin-bottom: 0.8em;
+  padding: 0.5em 0;
+  border-bottom: 1px solid #e1e5e9;
+}
+
+.pattern-item:last-child, .transformation-item:last-child, .prediction-item:last-child, .growth-item:last-child, .recommendation-item:last-child {
+  border-bottom: none;
+}
+
+.pattern-icon, .transformation-icon, .prediction-icon, .growth-icon, .recommendation-icon {
+  display: inline-block;
+  margin-right: 0.5em;
+  font-size: 1em;
+  color: #666;
+}
+
+.pattern-content, .transformation-content, .prediction-content, .growth-content, .recommendation-content {
+  display: inline;
+}
+
+.pattern-content p, .transformation-content p, .prediction-content p, .growth-content p, .recommendation-content p {
+  margin: 0;
+  color: #222;
+  line-height: 1.6;
+  display: inline;
+}
+
+/* Processing state styling */
+.wiki-processing {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2em 0;
+}
+
+.processing-header {
+  text-align: center;
+  margin-bottom: 3em;
+}
+
+.processing-content {
+  display: grid;
+  gap: 3em;
+}
+
+.processing-info {
+  display: flex;
+  gap: 2em;
+  align-items: flex-start;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 2em;
+  box-shadow: var(--shadow-1);
+}
+
+.processing-icon {
+  font-size: 3em;
+  flex-shrink: 0;
+  margin-top: 0.5em;
+}
+
+.processing-text h2 {
+  margin-top: 0;
+  margin-bottom: 1em;
+  color: var(--ink);
+}
+
+.processing-text p {
+  margin-bottom: 1.5em;
+  color: var(--sub);
+  max-width: none;
+}
+
+.processing-steps {
+  margin: 2em 0;
+}
+
+.processing-steps h3 {
+  margin-bottom: 1em;
+  color: var(--ink);
+}
+
+.processing-steps ol {
+  margin-left: 2em;
+}
+
+.processing-steps li {
+  margin-bottom: 1em;
+  color: var(--sub);
+  line-height: 1.6;
+}
+
+.processing-steps strong {
+  color: var(--ink);
+}
+
+.processing-note {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 1.5em;
+  margin-top: 2em;
+}
+
+.processing-note p {
+  margin: 0;
+  color: var(--ink);
+}
+
+.processing-status {
+  text-align: center;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 2em;
+  box-shadow: var(--shadow-1);
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1em;
+  margin-bottom: 1.5em;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  background: var(--ok-2);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.refresh-hint p {
+  color: var(--sub);
+  margin: 0;
+  max-width: none;
+}
+
+/* Focus and accessibility */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Improve text selection */
+::selection {
+  background: var(--ring);
+  color: white;
+}
+
+::-moz-selection {
+  background: var(--ring);
+  color: white;
 }
 
 /* Print styles */

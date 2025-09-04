@@ -258,7 +258,7 @@ export default function WikiAnalysis({
                     </ul>
                     <li><a href="#future-predictions">Прогнозы</a></li>
                   </ul>
-                  <li><a href="#what-to-do">Что с этим всем делать</a></li>
+                  <li><a href="#what-to-do">Что со всем этим делать</a></li>
                   <ul>
                     <li><a href="#growth">Области для роста</a></li>
                     <li><a href="#recommendations">Рекомендации</a></li>
@@ -273,7 +273,7 @@ export default function WikiAnalysis({
                     <li><a href="#relationships">Отношения</a></li>
                   </ul>
                   <li><a href="#patterns">Паттерны поведения</a></li>
-                  <li><a href="#what-to-do">Что с этим всем делать</a></li>
+                  <li><a href="#what-to-do">Что со всем этим делать</a></li>
                   <ul>
                     <li><a href="#growth">Области для роста</a></li>
                     <li><a href="#recommendations">Рекомендации</a></li>
@@ -296,9 +296,45 @@ export default function WikiAnalysis({
         {/* Main content */}
         <div className="wiki-content">
           {status === 'processing' && (
-            <div className="mw-message-box mw-message-box-warning">
-              <strong>Обработка данных...</strong><br/>
-              Анализ личности в процессе. Это может занять несколько минут. Обновите страницу для проверки статуса.
+            <div className="wiki-processing">
+              <div className="processing-header">
+                <h1 className="wiki-title">Анализ в процессе...</h1>
+                <div className="wiki-subtitle">Пожалуйста, подождите, пока анализ будет завершён</div>
+              </div>
+              
+              <div className="processing-content">
+                <div className="processing-info">
+                  <div className="processing-icon">⏳</div>
+                  <div className="processing-text">
+                    <h2>Статус обработки</h2>
+                    <p>Система ЗЕРКАЛО анализирует ваши данные. Это может занять несколько минут в зависимости от объёма информации.</p>
+                    
+                    <div className="processing-steps">
+                      <h3>Что происходит сейчас:</h3>
+                      <ol>
+                        <li><strong>Чтение данных</strong> — обработка экспортированных сообщений</li>
+                        <li><strong>Анализ паттернов</strong> — выявление психологических особенностей</li>
+                        <li><strong>Формирование выводов</strong> — создание психологического портрета</li>
+                        <li><strong>Подготовка отчёта</strong> — оформление результатов в вики-стиле</li>
+                      </ol>
+                    </div>
+                    
+                    <div className="processing-note">
+                      <p><strong>Примечание:</strong> Не закрывайте эту страницу. По завершении анализа вы будете автоматически перенаправлены к результатам.</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="processing-status">
+                  <div className="status-indicator">
+                    <div className="status-dot"></div>
+                    <span>Обработка активна</span>
+                  </div>
+                  <div className="refresh-hint">
+                    <p>Если анализ занимает слишком много времени, вы можете обновить страницу для проверки статуса.</p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
@@ -491,7 +527,7 @@ export default function WikiAnalysis({
                     </div>
 
                     <hr className="section-divider" />
-                    <h1 id="what-to-do">Что с этим всем делать</h1>
+                    <h1 id="what-to-do">Что со всем этим делать</h1>
                     <p>Практические рекомендации и области для развития на основе проведённого анализа.</p>
 
                     <h2 id="growth">Области для роста</h2>
@@ -550,7 +586,7 @@ export default function WikiAnalysis({
                     </div>
 
                     <hr className="section-divider" />
-                    <h1 id="what-to-do">Что с этим всем делать</h1>
+                    <h1 id="what-to-do">Что со всем этим делать</h1>
                     <p>Практические рекомендации и области для развития на основе проведённого анализа.</p>
 
                     <h2 id="growth">Области для роста</h2>

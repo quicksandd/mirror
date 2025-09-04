@@ -334,16 +334,8 @@ class Insight extends Component {
             <h2>Анализ в процессе...</h2>
             <p>Пожалуйста, подождите, пока анализ будет завершен. Это может занять несколько минут.</p>
             <button 
+              className="btn"
               onClick={() => window.location.reload()} 
-              style={{
-                marginTop: '20px',
-                padding: '10px 20px',
-                background: '#007bff',
-                color: 'white',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer'
-              }}
             >
               Обновить страницу
             </button>

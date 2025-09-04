@@ -2,17 +2,13 @@ import React from "react";
 
 function Row({ title, text }) {
   return (
-    <div style={{display:"flex",alignItems:"flex-start",gap:16}}>
-      <div style={{
-        width:24,height:24,borderRadius:"50%",
-        background:"linear-gradient(135deg,var(--ok),var(--ok-2))",
-        display:"grid",placeItems:"center",flexShrink:0,marginTop:2
-      }}>
-        <span style={{color:"#fff",fontSize:12,fontWeight:800}}>✓</span>
+    <div className="privacy-row">
+      <div className="privacy-icon">
+        <span>✓</span>
       </div>
-      <div>
-        <div style={{fontWeight:800,color:"var(--ink)",marginBottom:4}} dangerouslySetInnerHTML={{__html:title}} />
-        <div style={{color:"var(--sub)",lineHeight:1.5}}>{text}</div>
+      <div className="privacy-content">
+        <div className="privacy-title" dangerouslySetInnerHTML={{__html:title}} />
+        <div className="privacy-text">{text}</div>
       </div>
     </div>
   );

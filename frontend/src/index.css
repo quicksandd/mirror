@@ -30,6 +30,10 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Inter",system
 .btn--primary{border-color:transparent;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff}
 .btn--primary:hover{box-shadow:var(--shadow-3)}
 .btn--danger{border-color:#fecaca;color:#dc2626;background:#fff}
+.btn--secondary{background:var(--bg-soft);border-color:var(--line);color:var(--ink)}
+.btn--secondary:hover{background:var(--bg);transform:translateY(-1px);box-shadow:var(--shadow-2)}
+.btn--github{border-color:transparent;background:linear-gradient(135deg,#24292e,#333);color:#fff;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,0.15)}
+.btn--github:hover{box-shadow:var(--shadow-3);transform:translateY(-1px);background:linear-gradient(135deg,#333,#444);box-shadow:0 6px 20px rgba(0,0,0,0.25)}
 
 /* LAYOUT */
 .container{max-width:var(--width);margin:0 auto;padding:0 20px}
@@ -49,7 +53,9 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Inter",system
 .hero{padding:72px 0 32px}
 .hero__grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
 .privacy-note{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg-soft);color:var(--sub);font-weight:700}
-.hero__cta{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap}
+.hero__cta{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;justify-content:flex-start}
+.hero__cta .btn--github{background:linear-gradient(135deg,#24292e,#333);color:#fff;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,0.15)}
+.hero__cta .btn--github:hover{background:linear-gradient(135deg,#333,#444);box-shadow:0 6px 20px rgba(0,0,0,0.25)}
 .mock{position:relative;min-height:420px;display:flex;align-items:center;justify-content:center}
 .chatcard{position:absolute;left:6%;top:14%;width:220px;transform:rotate(-6deg);border-radius:14px;box-shadow:var(--shadow-3);background:#fff;padding:10px}
 .chatcard img{width:100%;border-radius:12px;display:block}
@@ -94,6 +100,13 @@ figcaption{text-align:center;font-weight:700;font-size:13px;color:var(--ink);mar
 .a:last-child{border-bottom:0}
 .a span{margin-left:auto;color:var(--muted);font-size:12px}
 
+/* PREVIEW ACTIONS */
+.preview-actions{display:flex;gap:10px;flex-wrap:wrap}
+
+/* TELEGRAM OFFICIAL GUIDE */
+.tg-official-guide{text-align:left}
+.tg-official-guide .step-title{margin-bottom:6px}
+
 /* Steps list for Telegram panel */
 .steps-list{display:grid;gap:12px;justify-items:center}
 .steps-list .step-content{max-width:560px}
@@ -103,6 +116,30 @@ figcaption{text-align:center;font-weight:700;font-size:13px;color:var(--ink);mar
 .tg-video{position:relative;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow-2);overflow:hidden}
 .tg-video video{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#000}
 .tg-video__caption{padding:10px 12px;color:var(--muted);font-weight:700;font-size:13px;border-top:1px solid var(--line);background:var(--bg-soft)}
+
+/* FOUNDER CARDS */
+.founder-card{background:linear-gradient(135deg,#fff 0%,#f8fafc 100%);border-radius:var(--radius-xl);padding:32px;text-align:center;box-shadow:var(--shadow-2);border:1px solid rgba(0,0,0,0.05);transition:transform .2s ease,box-shadow .2s ease}
+.founder-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-3)}
+.founder-avatar{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand-2));display:flex;align-items:center;justify-content:center;margin:0 auto 24px;box-shadow:var(--shadow-2)}
+.founder-avatar img{width:96px;height:96px;border-radius:50%;object-fit:cover;border:3px solid #fff}
+.founder-name{font-weight:800;font-size:20px;margin-bottom:8px;color:var(--ink)}
+.founder-caption{margin-bottom:20px}
+.founder-link{background:var(--bg-soft);border:1px solid var(--line);color:var(--ink);font-weight:700;padding:12px 20px}
+
+/* TRUST SECTION */
+.trust-cta{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:56px;padding:20px}
+.trust-github-btn{padding:16px 24px;font-size:16px;min-width:200px;justify-content:center;background:linear-gradient(135deg,#24292e,#333);color:#fff;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,0.15)}
+.trust-github-btn:hover{background:linear-gradient(135deg,#333,#444);box-shadow:0 6px 20px rgba(0,0,0,0.25);transform:translateY(-1px)}
+.trust-github-btn svg{margin-right:8px;flex-shrink:0}
+.founders-grid{display:grid;gap:32px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));max-width:800px;margin:0 auto}
+
+/* PRIVACY ROWS */
+.privacy-row{display:flex;align-items:flex-start;gap:16px}
+.privacy-icon{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--ok),var(--ok-2));display:grid;place-items:center;flex-shrink:0;margin-top:2px}
+.privacy-icon span{color:#fff;font-size:12px;font-weight:800}
+.privacy-content{flex:1}
+.privacy-title{font-weight:800;color:var(--ink);margin-bottom:4px}
+.privacy-text{color:var(--sub);line-height:1.5}
 
 footer{padding:40px 0 56px;color:var(--muted);text-align:center}
 
@@ -121,6 +158,10 @@ footer{padding:40px 0 56px;color:var(--muted);text-align:center}
   .phone{max-width:180px;height:360px}
   .step-content{margin-top:12px;gap:12px}
   .badge{width:28px;height:28px;font-size:12px}
+  .trust-cta{justify-content:center;gap:20px}
+  .trust-github-btn{min-width:220px}
+  .hero__cta{justify-content:center;gap:16px}
+  .hero__cta .btn{min-width:160px}
 }
 @media (max-width:640px){
   .phones-grid{grid-template-columns:repeat(2,1fr);gap:20px}
@@ -128,6 +169,8 @@ footer{padding:40px 0 56px;color:var(--muted);text-align:center}
   .mock{min-height:0}
   .chatcard{display:none}
   .wikishot{position:static;transform:none;width:100%;border-radius:12px;box-shadow:var(--shadow-2)}
+  .hero__cta{justify-content:center;gap:16px}
+  .hero__cta .btn{min-width:140px}
 }
 @media (max-width:480px){
   .container,.container-wide{padding:0 12px}
@@ -153,6 +196,8 @@ footer{padding:40px 0 56px;color:var(--muted);text-align:center}
     -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 70%, rgba(0,0,0,0.35) 90%, rgba(0,0,0,0) 100%);
     mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 70%, rgba(0,0,0,0.35) 90%, rgba(0,0,0,0) 100%);
   }
+  .trust-github-btn{min-width:180px;padding:14px 20px;font-size:14px}
+  .hero__cta .btn--github{min-width:140px;padding:10px 16px;font-size:13px}
 }
 
 @media print{.nav,.hero__cta .btn,dialog{display:none!important}}
