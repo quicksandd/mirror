@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { createI18n } from "./i18n";
+import { createI18n } from "./i18n.js";
 import Nav from "./components/Nav.jsx";
 import Hero from "./components/Hero.jsx";
 import ExportSection from "./components/ExportSection.jsx";

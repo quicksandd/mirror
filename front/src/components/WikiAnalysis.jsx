@@ -244,7 +244,7 @@ export default function WikiAnalysis({
       {/* Header */}
       <div className="wiki-header">
         <div className="wiki-nav">
-          <a href="/">← Вернуться к ЗЕРКАЛУ</a>
+          <a href="/ui_server/public">← Вернуться к ЗЕРКАЛУ</a>
           <a href="#" onClick={(e)=>{e.preventDefault(); window.print()}}>Версия для печати</a>
           <a href="#" onClick={(e)=>{e.preventDefault(); downloadInsights()}}>Скачать</a>
         </div>
