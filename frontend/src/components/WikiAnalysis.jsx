@@ -223,7 +223,7 @@ export default function WikiAnalysis({
       {/* Header */}
       <div className="wiki-header">
         <div className="wiki-nav">
-          <a href="/ui_server/public">← Вернуться к ЗЕРКАЛУ</a>
+          <a href="/">← Вернуться к ЗЕРКАЛУ</a>
           <a href="#" onClick={(e)=>{e.preventDefault(); window.print()}}>Версия для печати</a>
           <a href="#" onClick={(e)=>{e.preventDefault(); downloadInsights()}}>Скачать</a>
         </div>
@@ -286,7 +286,7 @@ export default function WikiAnalysis({
             <ul>
               <li><a href="#" onClick={(e)=>{e.preventDefault(); downloadInsights()}}>Скачать анализ</a></li>
               <li><a href="#" onClick={(e)=>{e.preventDefault(); openDecryptModal()}}>Расшифровать данные</a></li>
-              <li><a href="/mirror">Новый анализ</a></li>
+              <li><a href="/">Новый анализ</a></li>
             </ul>
           </div>
         </div>
@@ -590,7 +590,7 @@ export default function WikiAnalysis({
 
                 <h2>См. также</h2>
                 <ul>
-                  <li><a href="/mirror">ЗЕРКАЛО — главная страница</a></li>
+                  <li><a href="/">ЗЕРКАЛО — главная страница</a></li>
                   <li><a href="/mirror/export-guide/">Инструкция по экспорту данных</a></li>
                 </ul>
               </div>

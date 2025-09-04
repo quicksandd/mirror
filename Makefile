@@ -11,17 +11,17 @@ runserver_wm:
 
 build_frontend:
 	npm ci
-	cd front && npm ci && npm run build:heroku
+	cd frontend && npm ci && npm run build:heroku
 	@echo "Frontend build complete!"
 
 frontend_dev:
-	cd front && npm run dev
+	cd frontend && npm run dev
 
 frontend_install:
-	cd front && npm install
+	cd frontend && npm install
 
 frontend_clean:
-	rm -rf front/node_modules
+	rm -rf frontend/node_modules
 	rm -rf static/frontend
 
 release:
