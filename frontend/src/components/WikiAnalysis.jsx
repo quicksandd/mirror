@@ -118,7 +118,7 @@ export default function WikiAnalysis({
           content += 'Всего сообщений: ' + (insights.total_messages ?? '') + '\\n'
           content += 'Количество периодов: ' + (insights.number_of_periods ?? '') + '\\n\\n'
 
-          content += 'ПСИХОЛОГИЧЕСКИЙ ПРОФИЛЬ\\n'
+          content += 'ПСИХОЛОГИЧЕСКИЙ ПОРТРЕТ\\n'
           content += '='.repeat(50) + '\\n\\n'
 
           content += 'ОСНОВНЫЕ ХАРАКТЕРИСТИКИ\\n'
@@ -127,26 +127,11 @@ export default function WikiAnalysis({
           content += 'СТИЛЬ ОБЩЕНИЯ\\n'
           content += (insights.communication_style || '') + '\\n\\n'
 
-          content += 'ЭМОЦИОНАЛЬНОЕ СОСТОЯНИЕ\\n'
-          content += (insights.emotional_state || '') + '\\n\\n'
-
           content += 'ОТНОШЕНИЯ С ОКРУЖАЮЩИМИ\\n'
           content += (insights.relationship_patterns || '') + '\\n\\n'
 
-          content += 'ОСНОВНЫЕ ПАТТЕРНЫ ПОВЕДЕНИЯ\\n'
-          ;(insights.main_patterns || []).forEach(p=>{ content += `• ${p}\\n` })
-          content += '\\n'
-
           content += 'ЧЕРТЫ ЛИЧНОСТИ\\n'
           ;(insights.personality_traits || []).forEach(t=>{ content += `• ${t}\\n` })
-          content += '\\n'
-
-          content += 'ЭМОЦИОНАЛЬНЫЕ ТРИГГЕРЫ\\n'
-          ;(insights.emotional_triggers || []).forEach(t=>{ content += `• ${t}\\n` })
-          content += '\\n'
-
-          content += 'СТРАТЕГИИ СОВЛАДАНИЯ\\n'
-          ;(insights.coping_mechanisms || []).forEach(s=>{ content += `• ${s}\\n` })
           content += '\\n'
 
           content += 'ОБЛАСТИ ДЛЯ РОСТА\\n'
@@ -185,24 +170,18 @@ export default function WikiAnalysis({
           content += '\\n'
         } else {
           content += 'ПСИХОЛОГИЧЕСКИЙ ПОРТРЕТ\\n'
+          content += '='.repeat(50) + '\\n\\n'
+          content += 'ОСНОВНЫЕ ХАРАКТЕРИСТИКИ\\n'
           content += (insights.personality || '') + '\\n\\n'
-          content += 'СТИЛЬ ОБЩЕНИЯ\\n'
-          content += (insights.communication_style || '') + '\\n\\n'
-          content += 'ЭМОЦИОНАЛЬНОЕ СОСТОЯНИЕ\\n'
-          content += (insights.emotional_state || '') + '\\n\\n'
-          content += 'ОТНОШЕНИЯ С ОКРУЖАЮЩИМИ\\n'
-          content += (insights.relationship_patterns || '') + '\\n\\n'
-          content += 'ОСНОВНЫЕ ПАТТЕРНЫ ПОВЕДЕНИЯ\\n'
-          ;(insights.main_patterns || []).forEach(p=>{ content += `• ${p}\\n` })
-          content += '\\n'
           content += 'ЧЕРТЫ ЛИЧНОСТИ\\n'
           ;(insights.personality_traits || []).forEach(t=>{ content += `• ${t}\\n` })
           content += '\\n'
-          content += 'ЭМОЦИОНАЛЬНЫЕ ТРИГГЕРЫ\\n'
-          ;(insights.emotional_triggers || []).forEach(t=>{ content += `• ${t}\\n` })
-          content += '\\n'
-          content += 'СТРАТЕГИИ СОВЛАДАНИЯ\\n'
-          ;(insights.coping_mechanisms || []).forEach(s=>{ content += `• ${s}\\n` })
+          content += 'СТИЛЬ ОБЩЕНИЯ\\n'
+          content += (insights.communication_style || '') + '\\n\\n'
+          content += 'ОТНОШЕНИЯ С ОКРУЖАЮЩИМИ\\n'
+          content += (insights.relationship_patterns || '') + '\\n\\n'
+          content += 'ПАТТЕРНЫ ПОВЕДЕНИЯ\\n'
+          ;(insights.main_patterns || []).forEach(p=>{ content += `• ${p}\\n` })
           content += '\\n'
           content += 'ОБЛАСТИ ДЛЯ РОСТА\\n'
           ;(insights.growth_areas || []).forEach(a=>{ content += `• ${a}\\n` })
@@ -258,15 +237,12 @@ export default function WikiAnalysis({
             <ul>
               {insights?.processing_type === 'timeline' ? (
                 <>
-                  <li><a href="#psychological-profile">Психологический профиль</a></li>
+                  <li><a href="#psychological-profile">Психологический портрет</a></li>
                   <ul>
+                    <li><a href="#traits">Черты личности</a></li>
                     <li><a href="#communication">Стиль общения</a></li>
-                    <li><a href="#emotional">Эмоциональное состояние</a></li>
                     <li><a href="#relationships">Отношения</a></li>
                     <li><a href="#patterns">Паттерны поведения</a></li>
-                    <li><a href="#traits">Черты личности</a></li>
-                    <li><a href="#triggers">Эмоциональные триггеры</a></li>
-                    <li><a href="#coping">Стратегии совладания</a></li>
                   </ul>
                   <li><a href="#evolution-timeline">Эволюция личности</a></li>
                   <ul>
@@ -288,14 +264,13 @@ export default function WikiAnalysis({
                 </>
               ) : (
                 <>
-                  <li><a href="#personality">Психологический портрет</a></li>
-                  <li><a href="#communication">Стиль общения</a></li>
+                  <li><a href="#psychological-profile">Психологический портрет</a></li>
+                  <ul>
+                    <li><a href="#traits">Черты личности</a></li>
+                    <li><a href="#communication">Стиль общения</a></li>
+                    <li><a href="#relationships">Отношения</a></li>
+                  </ul>
                   <li><a href="#patterns">Паттерны поведения</a></li>
-                  <li><a href="#traits">Черты личности</a></li>
-                  <li><a href="#triggers">Эмоциональные триггеры</a></li>
-                  <li><a href="#coping">Стратегии совладания</a></li>
-                  <li><a href="#relationships">Отношения</a></li>
-                  <li><a href="#emotional">Эмоциональное состояние</a></li>
                   <li><a href="#what-to-do">Что с этим всем делать</a></li>
                   <ul>
                     <li><a href="#growth">Области для роста</a></li>
@@ -391,22 +366,7 @@ export default function WikiAnalysis({
                   <>
                     <p><strong>{personName || 'Данный субъект'}</strong> — {insights.main_characteristics}</p>
 
-                    <h1 id="psychological-profile">Психологический профиль</h1>
-
-                    <h2 id="communication">Стиль общения</h2>
-                    <p>{insights.communication_style}</p>
-
-                    <h2 id="emotional">Эмоциональное состояние</h2>
-                    <p>{insights.emotional_state}</p>
-
-                    <h2 id="relationships">Отношения с окружающими</h2>
-                    <p>{insights.relationship_patterns}</p>
-
-                    <h2 id="patterns">Основные паттерны поведения</h2>
-                    <p>В ходе анализа были выявлены следующие устойчивые модели поведения:</p>
-                    <ul>
-                      {(insights.main_patterns || []).map((pattern, i)=>(<li key={i}>{pattern}</li>))}
-                    </ul>
+                    <h1 id="psychological-profile">Психологический портрет</h1>
 
                     <h2 id="traits">Черты личности</h2>
                     <p>Доминирующие характеристики личности включают в себя:</p>
@@ -414,17 +374,24 @@ export default function WikiAnalysis({
                       {(insights.personality_traits || []).map((t, i)=>(<li key={i}>{t}</li>))}
                     </ul>
 
-                    <h2 id="triggers">Эмоциональные триггеры</h2>
-                    <p>Факторы, вызывающие наиболее сильные эмоциональные реакции:</p>
-                    <ul>
-                      {(insights.emotional_triggers || []).map((t, i)=>(<li key={i}>{t}</li>))}
-                    </ul>
+                    <h2 id="communication">Стиль общения</h2>
+                    <p>{insights.communication_style}</p>
 
-                    <h2 id="coping">Стратегии совладания</h2>
-                    <p>Механизмы и подходы, используемые для преодоления трудных ситуаций:</p>
-                    <ul>
-                      {(insights.coping_mechanisms || []).map((s, i)=>(<li key={i}>{s}</li>))}
-                    </ul>
+                    <h2 id="relationships">Отношения с окружающими</h2>
+                    <p>{insights.relationship_patterns}</p>
+
+                    <h2 id="patterns">Основные паттерны поведения</h2>
+                    <p>В ходе анализа были выявлены следующие устойчивые модели поведения:</p>
+                    <div className="patterns-container">
+                      {(insights.main_patterns || []).map((pattern, i)=>(
+                        <div key={i} className="pattern-item">
+                          <div className="pattern-icon">🔄</div>
+                          <div className="pattern-content">
+                            <p>{pattern}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
 
                     <hr className="section-divider" />
                     <h1 id="evolution-timeline">Эволюция личности во времени</h1>
@@ -436,35 +403,90 @@ export default function WikiAnalysis({
                     <hr className="subsection-divider" />
 
                     <h2 id="key-transformations">Ключевые моменты трансформации</h2>
-                    <p>Критические периоды, когда происходили значительные изменения:</p>
-                    <ul>
-                      {(insights.key_transformation_points || []).map((t, i)=>(<li key={i}>{t}</li>))}
-                    </ul>
+                    <p>Критические периоды, когда происходили значительные изменения в личности:</p>
+                    <div className="transformations-container">
+                      {(insights.key_transformation_points || []).map((t, i)=>(
+                        <div key={i} className="transformation-item">
+                          <div className="transformation-icon">🔄</div>
+                          <div className="transformation-content">
+                            <p>{t}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
 
                     <hr className="subsection-divider" />
 
                     <h2 id="timeline-periods">Детальный анализ по временным периодам</h2>
-                    {(insights.timeline_periods || []).map((period, idx)=>(
-                      <React.Fragment key={idx}>
-                        <h3 id={`period-${idx+1}`}>{period.period_name} ({period.start_date} - {period.end_date})</h3>
-                        <p><strong>Личность в этот период:</strong> {period.personality_during_period}</p>
-                        <p><strong>Эмоциональное состояние:</strong> {period.emotional_state}</p>
-                        <p><strong>Ключевые события:</strong></p>
-                        <ul>{(period.key_events || []).map((e, i)=>(<li key={i}>{e}</li>))}</ul>
-                        <p><strong>Паттерны общения:</strong></p>
-                        <ul>{(period.communication_patterns || []).map((p, i)=>(<li key={i}>{p}</li>))}</ul>
-                        <p><strong>Развитие или регресс:</strong> {period.growth_or_regression}</p>
-                        {idx < (insights.timeline_periods?.length||0) - 1 && <hr className="subsection-divider" />}
-                      </React.Fragment>
-                    ))}
+                    <p>Хронологический анализ развития личности, показывающий изменения и эволюцию во времени:</p>
+                    
+                    <div className="timeline-container">
+                      {(insights.timeline_periods || []).map((period, idx)=>(
+                        <div key={idx} className="timeline-period" id={`period-${idx+1}`}>
+                          <div className="period-header">
+                            <div className="period-number">{idx + 1}</div>
+                            <div className="period-title">
+                              <h3>{period.period_name}</h3>
+                              <div className="period-dates">{period.start_date} — {period.end_date}</div>
+                            </div>
+                          </div>
+                          
+                          <div className="period-content">
+                            <div className="period-section">
+                              <h4>👤 Личность в этот период</h4>
+                              <p>{period.personality_during_period}</p>
+                            </div>
+                            
+                            <div className="period-section">
+                              <h4>💭 Эмоциональное состояние</h4>
+                              <p>{period.emotional_state}</p>
+                            </div>
+                            
+                            <div className="period-section">
+                              <h4>🎯 Ключевые события</h4>
+                              {(period.key_events && period.key_events.length > 0) ? (
+                                <ul className="event-list">
+                                  {period.key_events.map((e, i)=>(<li key={i}>{e}</li>))}
+                                </ul>
+                              ) : (
+                                <p className="no-data">События не зафиксированы</p>
+                              )}
+                            </div>
+                            
+                            <div className="period-section">
+                              <h4>💬 Паттерны общения</h4>
+                              {(period.communication_patterns && period.communication_patterns.length > 0) ? (
+                                <ul className="pattern-list">
+                                  {period.communication_patterns.map((p, i)=>(<li key={i}>{p}</li>))}
+                                </ul>
+                              ) : (
+                                <p className="no-data">Паттерны не выявлены</p>
+                              )}
+                            </div>
+                            
+                            <div className="period-section">
+                              <h4>📈 Развитие или регресс</h4>
+                              <p>{period.growth_or_regression}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
 
                     <hr className="subsection-divider" />
 
                     <h2 id="future-predictions">Прогнозы на будущее</h2>
                     <p>Предсказания о будущем развитии на основе выявленных паттернов:</p>
-                    <ul>
-                      {(insights.future_predictions || []).map((p, i)=>(<li key={i}>{p}</li>))}
-                    </ul>
+                    <div className="predictions-container">
+                      {(insights.future_predictions || []).map((p, i)=>(
+                        <div key={i} className="prediction-item">
+                          <div className="prediction-icon">🔮</div>
+                          <div className="prediction-content">
+                            <p>{p}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
 
                     <hr className="section-divider" />
                     <h1 id="what-to-do">Что с этим всем делать</h1>
@@ -472,45 +494,58 @@ export default function WikiAnalysis({
 
                     <h2 id="growth">Области для роста</h2>
                     <p>Сферы личностного развития, требующие особого внимания:</p>
-                    <ul>
-                      {(insights.growth_areas || []).map((a, i)=>(<li key={i}>{a}</li>))}
-                    </ul>
+                    <div className="growth-container">
+                      {(insights.growth_areas || []).map((a, i)=>(
+                        <div key={i} className="growth-item">
+                          <div className="growth-icon">🌱</div>
+                          <div className="growth-content">
+                            <p>{a}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
 
                     <h2 id="recommendations">Рекомендации</h2>
                     <p>На основе проведённого анализа предлагаются следующие рекомендации:</p>
-                    <ul>
-                      {(insights.recommendations || []).map((r, i)=>(<li key={i}>{r}</li>))}
-                    </ul>
+                    <div className="recommendations-container">
+                      {(insights.recommendations || []).map((r, i)=>(
+                        <div key={i} className="recommendation-item">
+                          <div className="recommendation-icon">💡</div>
+                          <div className="recommendation-content">
+                            <p>{r}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </>
                 ) : (
                   <>
-                    <h2 id="personality">Психологический портрет</h2>
-                    <p>{insights.personality}</p>
+                    <p><strong>{personName || 'Данный субъект'}</strong> — {insights.personality}</p>
 
-                    <h2 id="communication">Стиль общения</h2>
-                    <p>{insights.communication_style}</p>
-
-                    <h2 id="patterns">Основные паттерны поведения</h2>
-                    <p>В ходе анализа были выявлены следующие устойчивые модели поведения:</p>
-                    <ul>{(insights.main_patterns || []).map((p, i)=>(<li key={i}>{p}</li>))}</ul>
+                    <h1 id="psychological-profile">Психологический портрет</h1>
 
                     <h2 id="traits">Черты личности</h2>
                     <p>Доминирующие характеристики личности включают в себя:</p>
                     <ul>{(insights.personality_traits || []).map((t, i)=>(<li key={i}>{t}</li>))}</ul>
 
-                    <h2 id="triggers">Эмоциональные триггеры</h2>
-                    <p>Факторы, вызывающие наиболее сильные эмоциональные реакции:</p>
-                    <ul>{(insights.emotional_triggers || []).map((t, i)=>(<li key={i}>{t}</li>))}</ul>
-
-                    <h2 id="coping">Стратегии совладания</h2>
-                    <p>Механизмы и подходы, используемые для преодоления трудных ситуаций:</p>
-                    <ul>{(insights.coping_mechanisms || []).map((s, i)=>(<li key={i}>{s}</li>))}</ul>
+                    <h2 id="communication">Стиль общения</h2>
+                    <p>{insights.communication_style}</p>
 
                     <h2 id="relationships">Отношения с окружающими</h2>
                     <p>{insights.relationship_patterns}</p>
 
-                    <h2 id="emotional">Эмоциональное состояние</h2>
-                    <p>{insights.emotional_state}</p>
+                    <h2 id="patterns">Основные паттерны поведения</h2>
+                    <p>В ходе анализа были выявлены следующие устойчивые модели поведения:</p>
+                    <div className="patterns-container">
+                      {(insights.main_patterns || []).map((pattern, i)=>(
+                        <div key={i} className="pattern-item">
+                          <div className="pattern-icon">🔄</div>
+                          <div className="pattern-content">
+                            <p>{pattern}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
 
                     <hr className="section-divider" />
                     <h1 id="what-to-do">Что с этим всем делать</h1>
@@ -518,11 +553,29 @@ export default function WikiAnalysis({
 
                     <h2 id="growth">Области для роста</h2>
                     <p>Сферы личностного развития, требующие особого внимания:</p>
-                    <ul>{(insights.growth_areas || []).map((a, i)=>(<li key={i}>{a}</li>))}</ul>
+                    <div className="growth-container">
+                      {(insights.growth_areas || []).map((a, i)=>(
+                        <div key={i} className="growth-item">
+                          <div className="growth-icon">🌱</div>
+                          <div className="growth-content">
+                            <p>{a}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
 
                     <h2 id="recommendations">Рекомендации</h2>
                     <p>На основе проведённого анализа предлагаются следующие рекомендации:</p>
-                    <ul>{(insights.recommendations || []).map((r, i)=>(<li key={i}>{r}</li>))}</ul>
+                    <div className="recommendations-container">
+                      {(insights.recommendations || []).map((r, i)=>(
+                        <div key={i} className="recommendation-item">
+                          <div className="recommendation-icon">💡</div>
+                          <div className="recommendation-content">
+                            <p>{r}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </>
                 )}
 

@@ -74,22 +74,23 @@ Thumbs.db
 # Nix
 result
 
-
 # Static files
 staticfiles/
 patient_avatars/
 
 *.sql
 
-# Vite UI app artifacts
-front/node_modules/
-front/dist/
-front/.vite/
-front/.eslintcache
-front/npm-debug.log*
-front/yarn-debug.log*
-front/yarn-error.log*
-front/pnpm-debug.log*
+# Node modules (global exclusion)
+node_modules/
+**/node_modules/
 
+# Frontend artifacts
 static/frontend
-node_modules
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.eslintcache
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
