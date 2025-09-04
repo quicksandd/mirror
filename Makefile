@@ -10,6 +10,7 @@ runserver_wm:
 	watchmedo auto-restart --patterns="*.py" --recursive -- python manage.py runserver
 
 build_frontend:
+	npm ci
 	cd front && npm ci && npm run build:heroku
 	@echo "Frontend build complete!"
 
@@ -24,6 +25,11 @@ frontend_clean:
 	rm -rf static/frontend
 
 release:
+	set -e
+	python manage.py migrate --noinput
+	python manage.py collectstatic --noinput
+
+release_with_frontend:
 	set -e
 	$(MAKE) build_frontend
 	python manage.py migrate --noinput
