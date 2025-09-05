@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Nav({ t, lang, setLang, onOpen, onKeypairManagerOpen }) {
+export default function Nav({ t, lang, setLang, onOpen }) {
   return (
     <header className="nav" role="navigation" aria-label="Main">
       <div className="nav__in">
@@ -16,9 +16,6 @@ export default function Nav({ t, lang, setLang, onOpen, onKeypairManagerOpen }) 
             <button className={`btn ${lang==='ru'?'btn--primary':'btn--secondary'}`} onClick={()=>setLang('ru')}>RU</button>
             <button className={`btn ${lang==='en'?'btn--primary':'btn--secondary'}`} onClick={()=>setLang('en')}>EN</button>
           </div>
-          <button className="btn btn--secondary" onClick={onKeypairManagerOpen}>
-            🔑 Ключи
-          </button>
           <button className="btn btn--primary" onClick={onOpen}>
             {t("nav.cta")}
           </button>
