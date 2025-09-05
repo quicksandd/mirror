@@ -173,6 +173,7 @@ footer{padding:40px 0 56px;color:var(--muted);text-align:center}
   .h1{margin:0}
   .hero__cta{justify-content:center;gap:16px}
   .hero__cta .btn{min-width:140px}
+  .nav{border-bottom:0}
 }
 @media (max-width:480px){
   .container,.container-wide{padding:0 12px}
@@ -202,6 +203,7 @@ footer{padding:40px 0 56px;color:var(--muted);text-align:center}
   }
   .trust-github-btn{min-width:180px;padding:14px 20px;font-size:14px}
   .hero__cta .btn--github{min-width:140px;padding:10px 16px;font-size:13px}
+  .nav{border-bottom:0}
 }
 
 @media print{.nav,.hero__cta .btn,dialog{display:none!important}}
