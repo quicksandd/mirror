@@ -170,7 +170,8 @@ footer{padding:40px 0 56px;color:var(--muted);text-align:center}
   .mock{min-height:0}
   .chatcard{display:none}
   .wikishot{position:static;transform:none;width:100%;border-radius:12px;box-shadow:var(--shadow-2);margin-bottom:0}
-  .h1{margin:0}
+  .h1{margin:0;border:0;border-bottom:0}
+  .lead{border:0;border-top:0;border-bottom:0}
   .hero__cta{justify-content:center;gap:16px}
   .hero__cta .btn{min-width:140px}
   .nav{border-bottom:0}
@@ -187,9 +188,9 @@ footer{padding:40px 0 56px;color:var(--muted);text-align:center}
   .phones-grid{grid-template-columns:1fr;gap:16px}
   .phone{max-width:160px;height:320px}
   .badge{width:24px;height:24px;font-size:11px}
-  .h1{font-size:clamp(24px,10vw,36px);font-weight:700;margin:0}
+  .h1{font-size:clamp(24px,10vw,36px);font-weight:700;margin:0;border:0;border-bottom:0}
   .h2{font-size:clamp(18px,8vw,28px);font-weight:700}
-  .lead{font-size:15px}
+  .lead{font-size:15px;border:0;border-top:0;border-bottom:0}
   .sub{font-size:13px}
   .hero{padding:0;gap:0;text-align:center}
   .privacy-note{display:none}
