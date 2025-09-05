@@ -6,7 +6,7 @@ export default defineConfig(({ mode }) => {
   // Load env file based on `mode` in the current working directory.
   const env = loadEnv(mode, process.cwd(), '')
   
-  const backendUrl = env.VITE_BACKEND_URL || (mode === 'production' ? '' : 'http://localhost:8000')
+  const backendUrl = env.VITE_BACKEND_URL === '/' ? env.VITE_BACKEND_URL : (env.VITE_BACKEND_URL || (mode === 'production' ? '' : 'http://localhost:8000'))
   
   console.log(`🚀 Vite config loaded with backend URL: ${backendUrl}`)
   

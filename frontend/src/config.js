@@ -1,7 +1,7 @@
 // Environment configuration
 export const config = {
   // Backend API URL - defaults to localhost:8000 if not set
-  backendUrl: import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000',
+  backendUrl: import.meta.env.VITE_BACKEND_URL === '/' ? '' : (import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'),
   
   // Development server port
   devPort: import.meta.env.VITE_DEV_SERVER_PORT || 3000,
