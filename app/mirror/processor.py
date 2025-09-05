@@ -125,9 +125,7 @@ Be honest, be direct, be compassionate but real. This is about genuine psycholog
 
     except Exception as e:
         log.info(f"Error calling GPT API: {e}")
-        import traceback
-
-        traceback.log.info_exc()
+        log.exception("Exception in call_gpt_api")
         return {"error": f"GPT API Error: {str(e)}"}
 
 
@@ -224,9 +222,7 @@ Be honest, be direct, be compassionate but real. This is about genuine psycholog
 
     except Exception as e:
         log.info(f"Error calling GPT API for timeline period: {e}")
-        import traceback
-
-        traceback.log.info_exc()
+        log.exception("Exception in call_gpt_api_timeline_period")
         return {"error": f"GPT API Error: {str(e)}"}
 
 
@@ -335,9 +331,7 @@ Be honest, be direct, be compassionate but real. This is about genuine psycholog
 
     except Exception as e:
         log.info(f"Error calling GPT API for timeline analysis: {e}")
-        import traceback
-
-        traceback.log.info_exc()
+        log.exception("Exception in call_gpt_api_timeline_analysis")
         return {"error": f"GPT API Error: {str(e)}"}
 
 
@@ -562,9 +556,7 @@ async def process_patient_data(chat_data: List[Dict[str, Any]], person_name: str
 
     except Exception as e:
         log.info(f"Error in process_patient_data: {e}")
-        import traceback
-
-        traceback.log.info_exc()
+        log.exception("Exception in process_patient_data")
         return {"error": f"Processing Error: {str(e)}"}
 
 
@@ -621,7 +613,5 @@ async def process_large_file_timeline(chat_data: List[Dict[str, Any]], person_na
 
     except Exception as e:
         log.info(f"Error in timeline processing: {e}")
-        import traceback
-
-        traceback.log.info_exc()
+        log.exception("Exception in process_large_file_timeline")
         return {"error": f"Timeline Processing Error: {str(e)}"}

@@ -18,13 +18,43 @@ class Insight extends Component {
       passwordError: '',
       decryptedInsights: null,
       decrypting: false,
-      hasStoredKeypair: false
+      hasStoredKeypair: false,
+      retryCount: 0,
+      isAutoRetrying: false
     }
     this.passwordRef = React.createRef()
+    this.retryInterval = null
   }
 
   componentDidMount() {
     this.fetchInsights()
+  }
+
+  componentWillUnmount() {
+    this.clearRetryInterval()
+  }
+
+  clearRetryInterval = () => {
+    if (this.retryInterval) {
+      clearInterval(this.retryInterval)
+      this.retryInterval = null
+    }
+  }
+
+  startAutoRetry = () => {
+    this.clearRetryInterval()
+    this.setState({ isAutoRetrying: true })
+    
+    this.retryInterval = setInterval(() => {
+      console.log('Auto-retrying data fetch...')
+      this.setState(prevState => ({ retryCount: prevState.retryCount + 1 }))
+      this.fetchInsights()
+    }, 10000) // 10 seconds
+  }
+
+  stopAutoRetry = () => {
+    this.clearRetryInterval()
+    this.setState({ isAutoRetrying: false })
   }
 
   fetchInsights = async () => {
@@ -57,13 +87,29 @@ class Insight extends Component {
       console.log('Fetched data:', result)
       console.log('Status:', result.status)
       
-      // Если есть сохраненный keypair и анализ завершен, автоматически расшифровываем данные
-      if (hasStoredKeypair && result && result.status === 'completed' && result.insights) {
-        await this.autoDecryptWithStoredKeypair(uuid, result)
+      // Handle auto-retry based on status
+      if (result.status === 'processing') {
+        // Start auto-retry if not already running
+        if (!this.state.isAutoRetrying) {
+          this.startAutoRetry()
+        }
+      } else {
+        // Stop auto-retry for completed or error status
+        this.stopAutoRetry()
+        
+        // If analysis is completed and we have stored keypair, auto-decrypt
+        if (hasStoredKeypair && result && result.status === 'completed' && result.insights) {
+          await this.autoDecryptWithStoredKeypair(uuid, result)
+        }
       }
     } catch (err) {
       console.error('Error fetching insights:', err)
       this.setState({ error: err.message })
+      
+      // If we're auto-retrying and get an error, continue retrying
+      if (this.state.isAutoRetrying) {
+        console.log('Error during auto-retry, will continue retrying...')
+      }
     } finally {
       this.setState({ loading: false })
     }
@@ -211,7 +257,9 @@ class Insight extends Component {
       passwordError, 
       decryptedInsights, 
       decrypting,
-      hasStoredKeypair
+      hasStoredKeypair,
+      retryCount,
+      isAutoRetrying
     } = this.state
 
     // Get UUID from URL path
@@ -333,9 +381,26 @@ class Insight extends Component {
             <div className="insight-processing-spinner"></div>
             <h2>Анализ в процессе...</h2>
             <p>Пожалуйста, подождите, пока анализ будет завершен. Это может занять несколько минут.</p>
+            {isAutoRetrying && (
+              <div style={{ 
+                marginTop: '20px', 
+                padding: '10px', 
+                background: '#e3f2fd', 
+                borderRadius: '5px',
+                border: '1px solid #2196f3'
+              }}>
+                <p style={{ margin: '0 0 5px 0', color: '#1976d2', fontWeight: 'bold' }}>
+                  🔄 Автоматическое обновление активно
+                </p>
+                <p style={{ margin: '0', color: '#666', fontSize: '14px' }}>
+                  Попыток обновления: {retryCount} | Следующее обновление через 10 секунд
+                </p>
+              </div>
+            )}
             <button 
               className="btn"
               onClick={() => window.location.reload()} 
+              style={{ marginTop: '10px' }}
             >
               Обновить страницу
             </button>
@@ -366,6 +431,22 @@ class Insight extends Component {
             <div className="insight-processing-spinner"></div>
             <h2>Ожидание завершения анализа...</h2>
             <p>Статус: {data.status}</p>
+            {isAutoRetrying && (
+              <div style={{ 
+                marginTop: '20px', 
+                padding: '10px', 
+                background: '#e3f2fd', 
+                borderRadius: '5px',
+                border: '1px solid #2196f3'
+              }}>
+                <p style={{ margin: '0 0 5px 0', color: '#1976d2', fontWeight: 'bold' }}>
+                  🔄 Автоматическое обновление активно
+                </p>
+                <p style={{ margin: '0', color: '#666', fontSize: '14px' }}>
+                  Попыток обновления: {retryCount} | Следующее обновление через 10 секунд
+                </p>
+              </div>
+            )}
             <button 
               onClick={() => window.location.reload()} 
               style={{
