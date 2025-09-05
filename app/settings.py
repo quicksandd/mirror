@@ -165,6 +165,9 @@ CORS_ALLOWED_ORIGINS = [
     "https://mirror-2d059a23dcda.herokuapp.com",
 ]
 
+# Allow requests from the same origin (for when frontend and backend are on same domain)
+CORS_ALLOW_SAME_ORIGIN = True
+
 # Allow credentials (cookies, authorization headers)
 CORS_ALLOW_CREDENTIALS = True
 
@@ -181,6 +184,16 @@ CORS_ALLOW_METHODS = [
 
 # Additional CORS settings for better compatibility
 CORS_PREFLIGHT_MAX_AGE = 86400  # Cache preflight requests for 24 hours
+
+# Handle preflight requests for all origins
+CORS_ALLOW_ALL_ORIGINS = False  # We'll use specific origins above
+
+# Additional headers that might be sent
+CORS_EXPOSE_HEADERS = [
+    'Content-Type',
+    'X-CSRFToken',
+    'Authorization',
+]
 
 # In development, allow all origins for easier debugging
 if DEBUG:
