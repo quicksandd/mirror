@@ -160,6 +160,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Vite default port
     "http://127.0.0.1:3000",
     "http://127.0.0.1:5173",
+    "https://mymirror.wiki",
+    "https://www.mymirror.wiki",
+    "https://mirror-2d059a23dcda.herokuapp.com",
 ]
 
 # Allow credentials (cookies, authorization headers)
@@ -175,6 +178,9 @@ CORS_ALLOW_METHODS = [
     "POST",
     "PUT",
 ]
+
+# Additional CORS settings for better compatibility
+CORS_PREFLIGHT_MAX_AGE = 86400  # Cache preflight requests for 24 hours
 
 # In development, allow all origins for easier debugging
 if DEBUG:
