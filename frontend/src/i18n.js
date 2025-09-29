@@ -157,8 +157,8 @@ export const DICT = {
   
   export function createI18n() {
     const params = new URLSearchParams(window.location.search);
-    let lang = (params.get('lang') || localStorage.getItem('mirror-lang') || 'ru').toLowerCase();
-    if (!['ru','en'].includes(lang)) lang = 'ru';
+    let lang = (params.get('lang') || localStorage.getItem('mirror-lang') || 'en').toLowerCase();
+    if (!['ru','en'].includes(lang)) lang = 'en';
   
     const saveLang = (next) => {
       if (!['ru','en'].includes(next)) return;

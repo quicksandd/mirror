@@ -162,6 +162,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     "https://mymirror.wiki",
     "https://www.mymirror.wiki",
+    "http://www.mymirror.wiki",
+    "http://mymirror.wiki",
     "https://mirror-2d059a23dcda.herokuapp.com",
 ]
 
