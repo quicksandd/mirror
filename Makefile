@@ -1,13 +1,15 @@
 make_and_migrate:
-	python manage.py makemigrations
-	python manage.py migrate
+	.venv/bin/python3 manage.py makemigrations
+	.venv/bin/python3 manage.py migrate
 	echo "Migrations completed"
 
 runserver:
-	python manage.py runserver
+	@echo "Starting Django server..."
+	@echo "If you get 'port already in use' error, run: make stop"
+	.venv/bin/python3 manage.py runserver
 
 runserver_wm:
-	watchmedo auto-restart --patterns="*.py" --recursive -- python manage.py runserver
+	watchmedo auto-restart --patterns="*.py" --recursive -- python3 manage.py runserver
 
 build_frontend:
 	npm ci
@@ -15,6 +17,8 @@ build_frontend:
 	@echo "Frontend build complete!"
 
 frontend_dev:
+	@echo "Starting Vite development server..."
+	@echo "If you get 'port already in use' error, run: make stop"
 	cd frontend && npm run dev
 
 frontend_install:
@@ -26,20 +30,32 @@ frontend_clean:
 
 release:
 	set -e
-	python manage.py migrate --noinput
-	python manage.py collectstatic --noinput
+	python3 manage.py migrate --noinput
+	python3 manage.py collectstatic --noinput
 
 release_with_frontend:
 	set -e
 	$(MAKE) build_frontend
-	python manage.py migrate --noinput
-	python manage.py collectstatic --noinput
+	python3 manage.py migrate --noinput
+	python3 manage.py collectstatic --noinput
 
 setup:
-	python -m venv .venv
-	source .venv/bin/activate
-	pip install -r requirements.txt
+	python3 -m venv .venv
+	.venv/bin/pip install -r requirements.txt
+	.venv/bin/python3 -m pip install pre-commit
+	.venv/bin/pre-commit install
+	@if [ ! -f .env ]; then \
+		echo "OPENAI_API_KEY=your-openai-api-key" > .env; \
+		echo "Created .env file - please update with your actual OpenAI API key"; \
+	fi
+	mkdir -p staticfiles
+	$(MAKE) frontend_install
 	$(MAKE) make_and_migrate
-	pre-commit install
+
+stop:
+	@echo "Stopping development servers..."
+	@pkill -f "manage.py runserver" || true
+	@pkill -f "vite" || true
+	@echo "Servers stopped."
 
 

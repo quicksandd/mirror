@@ -10,56 +10,90 @@ This platform uses **end-to-end encryption** to ensure your personal data remain
 
 ### Prerequisites
 
-- **Python 3.11+**
+- **Python 3.11+** (Python 3.13 fully supported)
 - **Node.js 18+**
 - **Git**
 
-### 1. Clone the Repository
+### 1. Clone and Setup
 
 ```bash
 git clone <repository-url>
-cd mirror
-```
+cd mirror-2
 
-### 2. Backend Setup (Django)
-
-#### Quick Setup (Recommended)
-
-```bash
-# Complete setup: create venv, install deps, run migrations
+# One command setup (does everything!)
 make setup
+
+# Update your API key
+nano .env  # Replace "your-openai-api-key" with your real key
+
+# Start development servers
+make runserver    # Terminal 1: Django backend
+make frontend_dev # Terminal 2: React frontend
 ```
 
-#### Environment Configuration
+**That's it!** Your application will be running at http://localhost:5173
 
-Create a `.env` file in the project root:
+## 📋 What the Setup Does
 
+The `make setup` command automatically handles everything:
+
+- ✅ Create Python virtual environment
+- ✅ Install all Python dependencies (Python 3.13 compatible)
+- ✅ Install pre-commit hooks
+- ✅ Create `.env` file with placeholder
+- ✅ Create necessary directories
+- ✅ Install frontend dependencies (npm packages)
+- ✅ Run database migrations
+- ✅ Set up everything needed
+
+## 🌐 Access the Application
+
+- **Frontend**: http://localhost:5173
+- **Backend**: http://localhost:8000
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+**Port already in use:**
 ```bash
-OPENAI_API_KEY=your-openai-api-key
+make stop  # Stop all servers
+make runserver    # Restart Django
+make frontend_dev # Restart Vite
 ```
 
-### 3. Frontend Setup (React + Vite)
+**Python 3.13 compatibility:**
+- The setup automatically uses `psycopg[binary]` for Python 3.13 compatibility
+- All dependencies are tested and working with Python 3.13
+- If you have issues with older Python versions, consider upgrading to Python 3.13
 
-#### Install Node.js Dependencies
+**Staticfiles warnings:**
+- The setup automatically creates the `staticfiles` directory
+- No manual intervention needed
+
+**Environment variables:**
+- The setup creates a `.env` file automatically
+- Just update it with your actual OpenAI API key
+
+### Development Commands
 
 ```bash
-# Install frontend dependencies
+# Complete setup (run once)
+make setup
+
+# Start development servers
+make runserver    # Django backend
+make frontend_dev # React frontend
+
+# Stop all servers
+make stop
+
+# Install frontend dependencies only
 make frontend_install
+
+# Run database migrations only
+make make_and_migrate
 ```
-
-### 4. Start Development Servers
-
-```bash
-# Terminal 1: Start Django backend
-make runserver
-
-# Terminal 2: Start React frontend
-make frontend_dev
-```
-
-### 5. Access the Application
-
-- http://localhost:5173
 
 ## 🔐 Encryption Process Explained
 

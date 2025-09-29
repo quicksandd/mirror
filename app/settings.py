@@ -115,9 +115,13 @@ STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Add STATICFILES_DIRS to find our custom static files
-STATICFILES_DIRS = [
-    BASE_DIR / 'static' / 'frontend',  # Frontend build directory
-]
+STATICFILES_DIRS = (
+    [
+        BASE_DIR / 'static' / 'frontend',  # Frontend build directory
+    ]
+    if (BASE_DIR / 'static' / 'frontend').exists()
+    else []
+)
 
 # Enable WhiteNoise's GZip compression
 # Temporarily use simple storage to avoid manifest issues during development
