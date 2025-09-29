@@ -2,6 +2,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { cleanListItems } from '../utils/cleanListItems.js'
 import { useTOCHighlight } from '../hooks/useTOCHighlight.js'
+import { createI18n } from '../i18n.js'
 
 /**
  * Props:
@@ -20,10 +21,11 @@ export default function WikiAnalysis({
   insights=null,
   decryptAnalysis
 }){
+  const i18n = createI18n()
   const [decryptOpen, setDecryptOpen] = useState(false)
   const decryptRef = useRef(null)
 
-  const personName = analysis?.person_name || 'Анализируемый субъект'
+  const personName = analysis?.person_name || i18n.t('wiki.subject.default')
   const createdAt = useMemo(()=>{
     const d = analysis?.created_at ? new Date(analysis.created_at) : null
     return d && !isNaN(d) ? d : null
@@ -106,49 +108,49 @@ export default function WikiAnalysis({
     try{
       cleanListItems()
       const name = personName || 'anonymous'
-      let content = `${personName} — Википедия\\n`
+      let content = `${personName} — ${i18n.lang === 'ru' ? 'Википедия' : 'Wikipedia'}\\n`
       content += '='.repeat(80) + '\\n\\n'
-      content += 'ПСИХОЛОГИЧЕСКИЙ АНАЛИЗ\\n'
-      content += 'Дата: ' + new Date().toLocaleDateString('ru-RU') + '\\n'
+      content += i18n.t('wiki.export.title') + '\\n'
+      content += i18n.t('wiki.export.date') + ' ' + new Date().toLocaleDateString(i18n.lang === 'ru' ? 'ru-RU' : 'en-US') + '\\n'
       content += 'UUID: ' + (uuid||'') + '\\n\\n'
 
       if (insights){
         if (insights.processing_type === 'timeline'){
-          content += 'АНАЛИЗ ПО ВРЕМЕННЫМ ПЕРИОДАМ\\n'
-          content += 'Всего сообщений: ' + (insights.total_messages ?? '') + '\\n'
-          content += 'Количество периодов: ' + (insights.number_of_periods ?? '') + '\\n\\n'
+          content += i18n.t('wiki.export.timeline.title') + '\\n'
+          content += i18n.t('wiki.export.totalMessages') + ' ' + (insights.total_messages ?? '') + '\\n'
+          content += i18n.t('wiki.export.periodsCount') + ' ' + (insights.number_of_periods ?? '') + '\\n\\n'
 
-          content += 'ПСИХОЛОГИЧЕСКИЙ ПОРТРЕТ\\n'
+          content += i18n.t('wiki.export.portrait.title') + '\\n'
           content += '='.repeat(50) + '\\n\\n'
 
-          content += 'ОСНОВНЫЕ ХАРАКТЕРИСТИКИ\\n'
+          content += i18n.t('wiki.export.characteristics.title') + '\\n'
           content += (insights.main_characteristics || '') + '\\n\\n'
 
-          content += 'СТИЛЬ ОБЩЕНИЯ\\n'
+          content += i18n.t('wiki.export.communication.title') + '\\n'
           content += (insights.communication_style || '') + '\\n\\n'
 
-          content += 'ОТНОШЕНИЯ С ОКРУЖАЮЩИМИ\\n'
+          content += i18n.t('wiki.export.relationships.title') + '\\n'
           content += (insights.relationship_patterns || '') + '\\n\\n'
 
-          content += 'ЧЕРТЫ ЛИЧНОСТИ\\n'
+          content += i18n.t('wiki.export.traits.title') + '\\n'
           ;(insights.personality_traits || []).forEach(t=>{ content += `• ${t}\\n` })
           content += '\\n'
 
-          content += 'ОБЛАСТИ ДЛЯ РОСТА\\n'
+          content += i18n.t('wiki.export.growth.title') + '\\n'
           ;(insights.growth_areas || []).forEach(a=>{ content += `• ${a}\\n` })
           content += '\\n'
 
-          content += 'РЕКОМЕНДАЦИИ\\n'
+          content += i18n.t('wiki.export.recommendations.title') + '\\n'
           ;(insights.recommendations || []).forEach(r=>{ content += `• ${r}\\n` })
           content += '\\n'
 
-          content += '\\nЭВОЛЮЦИЯ ЛИЧНОСТИ ВО ВРЕМЕНИ\\n'
+          content += '\\n' + i18n.t('wiki.export.evolution.title') + '\\n'
           content += '='.repeat(50) + '\\n\\n'
 
-          content += 'ОБЩАЯ ЭВОЛЮЦИЯ ЛИЧНОСТИ\\n'
+          content += i18n.t('wiki.export.evolution.general.title') + '\\n'
           content += (insights.overall_personality_evolution || '') + '\\n\\n'
 
-          content += 'КЛЮЧЕВЫЕ МОМЕНТЫ ТРАНСФОРМАЦИИ\\n'
+          content += i18n.t('wiki.export.evolution.key.title') + '\\n'
           ;(insights.key_transformation_points || []).forEach(t=>{ content += `• ${t}\\n` })
           content += '\\n'
 
@@ -169,31 +171,31 @@ export default function WikiAnalysis({
           ;(insights.future_predictions || []).forEach(p=>{ content += `• ${p}\\n` })
           content += '\\n'
         } else {
-          content += 'ПСИХОЛОГИЧЕСКИЙ ПОРТРЕТ\\n'
+          content += i18n.t('wiki.export.standard.title') + '\\n'
           content += '='.repeat(50) + '\\n\\n'
-          content += 'ОСНОВНЫЕ ХАРАКТЕРИСТИКИ\\n'
+          content += i18n.t('wiki.export.standard.characteristics') + '\\n'
           content += (insights.personality || '') + '\\n\\n'
-          content += 'ЧЕРТЫ ЛИЧНОСТИ\\n'
+          content += i18n.t('wiki.export.standard.traits') + '\\n'
           ;(insights.personality_traits || []).forEach(t=>{ content += `• ${t}\\n` })
           content += '\\n'
-          content += 'СТИЛЬ ОБЩЕНИЯ\\n'
+          content += i18n.t('wiki.export.standard.communication') + '\\n'
           content += (insights.communication_style || '') + '\\n\\n'
-          content += 'ОТНОШЕНИЯ С ОКРУЖАЮЩИМИ\\n'
+          content += i18n.t('wiki.export.standard.relationships') + '\\n'
           content += (insights.relationship_patterns || '') + '\\n\\n'
-          content += 'ПАТТЕРНЫ ПОВЕДЕНИЯ\\n'
+          content += i18n.t('wiki.export.standard.patterns') + '\\n'
           ;(insights.main_patterns || []).forEach(p=>{ content += `• ${p}\\n` })
           content += '\\n'
-          content += 'ОБЛАСТИ ДЛЯ РОСТА\\n'
+          content += i18n.t('wiki.export.standard.growth') + '\\n'
           ;(insights.growth_areas || []).forEach(a=>{ content += `• ${a}\\n` })
           content += '\\n'
-          content += 'РЕКОМЕНДАЦИИ\\n'
+          content += i18n.t('wiki.export.standard.recommendations') + '\\n'
           ;(insights.recommendations || []).forEach(r=>{ content += `• ${r}\\n` })
           content += '\\n'
         }
       }
 
       content += '='.repeat(80) + '\\n'
-      content += 'Анализ создан системой ЗЕРКАЛО\\n'
+      content += i18n.t('wiki.export.footer') + '\\n'
 
       const blob = new Blob([content], {type: 'text/plain;charset=utf-8'})
       const url = window.URL.createObjectURL(blob)
@@ -206,7 +208,7 @@ export default function WikiAnalysis({
       window.URL.revokeObjectURL(url)
     } catch(err){
       console.error('Error downloading insights:', err)
-      alert('Ошибка при скачивании файла')
+      alert(i18n.lang === 'ru' ? 'Ошибка при скачивании файла' : 'Error downloading file')
     }
   }
 
@@ -223,9 +225,9 @@ export default function WikiAnalysis({
       {/* Header */}
       <div className="wiki-header">
         <div className="wiki-nav">
-          <a href="/">← Вернуться к ЗЕРКАЛУ</a>
-          <a href="#" onClick={(e)=>{e.preventDefault(); window.print()}}>Версия для печати</a>
-          <a href="#" onClick={(e)=>{e.preventDefault(); downloadInsights()}}>Скачать</a>
+          <a href="/">{i18n.t('wiki.nav.back')}</a>
+          <a href="#" onClick={(e)=>{e.preventDefault(); window.print()}}>{i18n.t('wiki.nav.print')}</a>
+          <a href="#" onClick={(e)=>{e.preventDefault(); downloadInsights()}}>{i18n.t('wiki.nav.download')}</a>
         </div>
       </div>
 
@@ -233,48 +235,48 @@ export default function WikiAnalysis({
         {/* Sidebar */}
         <div className="wiki-sidebar">
           <div className="wiki-tools">
-            <h3>Содержание</h3>
+            <h3>{i18n.t('wiki.toc.title')}</h3>
             <ul>
               {insights?.processing_type === 'timeline' ? (
                 <>
-                  <li><a href="#psychological-profile">Психологический профиль</a></li>
+                  <li><a href="#psychological-profile">{i18n.t('wiki.toc.psychological')}</a></li>
                   <ul>
-                    <li><a href="#traits">Черты личности</a></li>
-                                      <li><a href="#communication">Коммуникация</a></li>
-                  <li><a href="#relationships">Отношения с людьми</a></li>
-                  <li><a href="#patterns">Как ведет себя</a></li>
+                    <li><a href="#traits">{i18n.t('wiki.toc.traits')}</a></li>
+                    <li><a href="#communication">{i18n.t('wiki.toc.communication')}</a></li>
+                    <li><a href="#relationships">{i18n.t('wiki.toc.relationships')}</a></li>
+                    <li><a href="#patterns">{i18n.t('wiki.toc.patterns')}</a></li>
                   </ul>
-                                      <li><a href="#evolution-timeline">Как меняется со временем</a></li>
+                  <li><a href="#evolution-timeline">{i18n.t('wiki.toc.evolution')}</a></li>
+                  <ul>
+                    <li><a href="#personality-evolution">Общие изменения</a></li>
+                    <li><a href="#key-transformations">Важные перемены</a></li>
+                    <li><a href="#timeline-periods">По периодам</a></li>
                     <ul>
-                      <li><a href="#personality-evolution">Общие изменения</a></li>
-                      <li><a href="#key-transformations">Важные перемены</a></li>
-                      <li><a href="#timeline-periods">По периодам</a></li>
-                      <ul>
-                        {(insights?.timeline_periods||[]).map((p, i)=>(
-                          <li key={i}><a href={`#period-${i+1}`}>{p.period_name}</a></li>
-                        ))}
-                      </ul>
-                      <li><a href="#future-predictions">Что ждет в будущем</a></li>
+                      {(insights?.timeline_periods||[]).map((p, i)=>(
+                        <li key={i}><a href={`#period-${i+1}`}>{p.period_name}</a></li>
+                      ))}
                     </ul>
-                    <li><a href="#practical-implications">Что с этим делать</a></li>
-                    <ul>
-                      <li><a href="#growth">Над чем работать</a></li>
-                      <li><a href="#recommendations">Советы</a></li>
-                    </ul>
+                    <li><a href="#future-predictions">Что ждет в будущем</a></li>
+                  </ul>
+                  <li><a href="#practical-implications">{i18n.t('wiki.toc.practical')}</a></li>
+                  <ul>
+                    <li><a href="#growth">{i18n.t('wiki.toc.growth')}</a></li>
+                    <li><a href="#recommendations">{i18n.t('wiki.toc.advice')}</a></li>
+                  </ul>
                 </>
               ) : (
                 <>
-                  <li><a href="#psychological-profile">Психологический профиль</a></li>
+                  <li><a href="#psychological-profile">{i18n.t('wiki.toc.psychological')}</a></li>
                   <ul>
-                    <li><a href="#traits">Черты личности</a></li>
-                                      <li><a href="#communication">Коммуникация</a></li>
-                  <li><a href="#relationships">Отношения с людьми</a></li>
-                  <li><a href="#patterns">Поведенческие паттерны</a></li>
+                    <li><a href="#traits">{i18n.t('wiki.toc.traits')}</a></li>
+                    <li><a href="#communication">{i18n.t('wiki.toc.communication')}</a></li>
+                    <li><a href="#relationships">{i18n.t('wiki.toc.relationships')}</a></li>
+                    <li><a href="#patterns">{i18n.t('wiki.toc.patterns')}</a></li>
                   </ul>
-                  <li><a href="#practical-implications">Что с этим делать</a></li>
+                  <li><a href="#practical-implications">{i18n.t('wiki.toc.practical')}</a></li>
                   <ul>
-                    <li><a href="#growth">Над чем работать</a></li>
-                    <li><a href="#recommendations">Советы</a></li>
+                    <li><a href="#growth">{i18n.t('wiki.toc.growth')}</a></li>
+                    <li><a href="#recommendations">{i18n.t('wiki.toc.advice')}</a></li>
                   </ul>
                 </>
               )}
@@ -282,10 +284,10 @@ export default function WikiAnalysis({
           </div>
 
           <div className="wiki-tools">
-            <h3>Инструменты</h3>
+            <h3>{i18n.t('wiki.toc.tools')}</h3>
             <ul>
-              <li><a href="#" onClick={(e)=>{e.preventDefault(); downloadInsights()}}>Экспорт анализа</a></li>
-              <li><a href="/">Новый анализ</a></li>
+              <li><a href="#" onClick={(e)=>{e.preventDefault(); downloadInsights()}}>{i18n.t('wiki.toc.export')}</a></li>
+              <li><a href="/">{i18n.t('wiki.nav.new')}</a></li>
             </ul>
           </div>
         </div>
@@ -295,30 +297,30 @@ export default function WikiAnalysis({
           {status === 'processing' && (
             <div className="wiki-processing">
               <div className="processing-header">
-                <h1 className="wiki-title">Анализ в процессе выполнения</h1>
-                <div className="wiki-subtitle">Система ЗЕРКАЛО проводит комплексный психологический анализ предоставленных данных</div>
+                <h1 className="wiki-title">{i18n.t('wiki.processing.title')}</h1>
+                <div className="wiki-subtitle">{i18n.t('wiki.processing.subtitle')}</div>
               </div>
               
               <div className="processing-content">
                 <div className="processing-info">
                   <div className="processing-icon"></div>
                   <div className="processing-text">
-                    <h2>Статус обработки</h2>
-                    <p>Система ЗЕРКАЛО осуществляет многоуровневый анализ текстовых данных с применением современных методов психолингвистики и машинного обучения. Время обработки зависит от объема предоставленной информации и сложности выявляемых паттернов.</p>
+                    <h2>{i18n.t('wiki.processing.status')}</h2>
+                    <p>{i18n.t('wiki.processing.description')}</p>
                     
                     <div className="processing-steps">
-                      <h3>Этапы анализа:</h3>
+                      <h3>{i18n.t('wiki.processing.steps.title')}</h3>
                       <ol>
-                        <li><strong>Предварительная обработка</strong> — очистка и структурирование текстовых данных</li>
-                        <li><strong>Лингвистический анализ</strong> — выявление семантических и синтаксических особенностей</li>
-                        <li><strong>Психологическое профилирование</strong> — определение личностных характеристик</li>
-                        <li><strong>Паттерн-анализ</strong> — выявление устойчивых поведенческих моделей</li>
-                        <li><strong>Формирование выводов</strong> — синтез результатов в структурированный отчет</li>
+                        <li><strong>{i18n.t('wiki.processing.step1')}</strong></li>
+                        <li><strong>{i18n.t('wiki.processing.step2')}</strong></li>
+                        <li><strong>{i18n.t('wiki.processing.step3')}</strong></li>
+                        <li><strong>{i18n.t('wiki.processing.step4')}</strong></li>
+                        <li><strong>{i18n.t('wiki.processing.step5')}</strong></li>
                       </ol>
                     </div>
                     
                     <div className="processing-note">
-                      <p><strong>Примечание:</strong> Рекомендуется не закрывать страницу до завершения анализа. По окончании обработки результаты будут автоматически отображены.</p>
+                      <p><strong>{i18n.t('wiki.processing.note')}</strong></p>
                     </div>
                   </div>
                 </div>
@@ -326,10 +328,10 @@ export default function WikiAnalysis({
                 <div className="processing-status">
                   <div className="status-indicator">
                     <div className="status-dot"></div>
-                    <span>Анализ активен</span>
+                    <span>{i18n.t('wiki.processing.active')}</span>
                   </div>
                   <div className="refresh-hint">
-                    <p>При длительной обработке можно обновить страницу для проверки текущего статуса.</p>
+                    <p>{i18n.t('wiki.processing.refresh')}</p>
                   </div>
                 </div>
               </div>
@@ -338,7 +340,7 @@ export default function WikiAnalysis({
 
           {status === 'error' && (
             <div className="mw-message-box mw-message-box-error">
-              <strong>Ошибка обработки данных:</strong><br/>
+              <strong>{i18n.t('wiki.error.title')}</strong><br/>
               {errorMessage}
             </div>
           )}
@@ -346,43 +348,43 @@ export default function WikiAnalysis({
           {status === 'completed' && insights && (
             <>
               <h1 className="wiki-title">{personName}</h1>
-              <div className="wiki-subtitle">Психологический анализ личности на основе текстовых данных</div>
+              <div className="wiki-subtitle">{i18n.t('wiki.completed.subtitle')}</div>
 
               {/* Infobox */}
               <div className="infobox">
-                <div className="infobox-title">Основная информация</div>
+                <div className="infobox-title">{i18n.t('wiki.infobox.title')}</div>
                 <div className="infobox-content">
                   <div className="infobox-row">
-                    <div className="infobox-label">Анализируемый субъект:</div>
-                    <div className="infobox-value">{personName || 'Не указано'}</div>
+                    <div className="infobox-label">{i18n.t('wiki.infobox.subject')}</div>
+                    <div className="infobox-value">{personName || i18n.t('wiki.infobox.notSpecified')}</div>
                   </div>
                   <div className="infobox-row">
-                    <div className="infobox-label">Дата проведения анализа:</div>
+                    <div className="infobox-label">{i18n.t('wiki.infobox.date')}</div>
                     <div className="infobox-value">
-                      {createdAt ? createdAt.toLocaleDateString('ru-RU') : 'Не указана'}
+                      {createdAt ? createdAt.toLocaleDateString(i18n.lang === 'ru' ? 'ru-RU' : 'en-US') : i18n.t('wiki.infobox.notSpecifiedDate')}
                     </div>
                   </div>
                   <div className="infobox-row">
-                    <div className="infobox-label">Идентификатор:</div>
+                    <div className="infobox-label">{i18n.t('wiki.infobox.id')}</div>
                     <div className="infobox-value" style={{fontFamily:'monospace', fontSize:'0.8em'}}>{uuid}</div>
                   </div>
                   <div className="infobox-row">
-                    <div className="infobox-label">Статус:</div>
-                    <div className="infobox-value">Завершен</div>
+                    <div className="infobox-label">{i18n.t('wiki.infobox.status')}</div>
+                    <div className="infobox-value">{i18n.t('wiki.infobox.status.completed')}</div>
                   </div>
 
                   {insights?.processing_type === 'timeline' && (
                     <>
                       <div className="infobox-row">
-                        <div className="infobox-label">Методология:</div>
-                        <div className="infobox-value">Временной анализ</div>
+                        <div className="infobox-label">{i18n.t('wiki.infobox.methodology')}</div>
+                        <div className="infobox-value">{i18n.t('wiki.infobox.methodology.timeline')}</div>
                       </div>
                       <div className="infobox-row">
-                        <div className="infobox-label">Объем данных:</div>
-                        <div className="infobox-value">{insights.total_messages} сообщений</div>
+                        <div className="infobox-label">{i18n.t('wiki.infobox.dataVolume')}</div>
+                        <div className="infobox-value">{insights.total_messages} {i18n.t('wiki.infobox.messages')}</div>
                       </div>
                       <div className="infobox-row">
-                        <div className="infobox-label">Временных периодов:</div>
+                        <div className="infobox-label">{i18n.t('wiki.infobox.periods')}</div>
                         <div className="infobox-value">{insights.number_of_periods}</div>
                       </div>
                     </>
@@ -392,7 +394,7 @@ export default function WikiAnalysis({
 
               {insights?.processing_type === 'timeline' && (
                 <div className="wiki-notice" style={{margin: '1em 0'}}>
-                  <strong>Методология временного анализа:</strong> Данное исследование основано на анализе {insights.total_messages} текстовых сообщений, разделенных на {insights.number_of_periods} хронологических периодов для выявления динамики личностного развития.
+                  <strong>{i18n.t('wiki.notice.timeline.title')}</strong> {i18n.t('wiki.notice.timeline.desc').replace('{total}', insights.total_messages).replace('{periods}', insights.number_of_periods)}
                 </div>
               )}
 
@@ -400,25 +402,25 @@ export default function WikiAnalysis({
               <div className="wiki-section">
                 {insights?.processing_type === 'timeline' ? (
                   <>
-                    <p><strong>{personName || 'Анализируемый субъект'}</strong> — {insights.main_characteristics}</p>
+                    <p><strong>{personName || i18n.t('wiki.subject.default')}</strong> — {insights.main_characteristics}</p>
 
-                    <h1 id="psychological-profile">Психологический профиль</h1>
-                    <p>Комплексный анализ личностных характеристик, основанный на систематическом изучении текстовых данных и выявлении устойчивых поведенческих паттернов.</p>
+                    <h1 id="psychological-profile">{i18n.t('wiki.section.psychological.title')}</h1>
+                    <p>{i18n.t('wiki.section.psychological.desc')}</p>
 
-                    <h2 id="traits">Черты личности</h2>
-                    <p>В ходе анализа были идентифицированы следующие доминирующие личностные характеристики:</p>
+                    <h2 id="traits">{i18n.t('wiki.section.traits.title')}</h2>
+                    <p>{i18n.t('wiki.section.traits.desc')}</p>
                     <ul>
                       {(insights.personality_traits || []).map((t, i)=>(<li key={i}>{t}</li>))}
                     </ul>
 
-                    <h2 id="communication">Коммуникация</h2>
+                    <h2 id="communication">{i18n.t('wiki.section.communication.title')}</h2>
                     <p>{insights.communication_style}</p>
 
-                    <h2 id="relationships">Отношения с людьми</h2>
+                    <h2 id="relationships">{i18n.t('wiki.section.relationships.title')}</h2>
                     <p>{insights.relationship_patterns}</p>
 
-                    <h2 id="patterns">Как ведет себя</h2>
-                    <p>Анализ показал следующие устойчивые модели поведения:</p>
+                    <h2 id="patterns">{i18n.t('wiki.section.patterns.alt')}</h2>
+                    <p>{i18n.t('wiki.section.patterns.desc')}</p>
                     <ul>
                       {(insights.main_patterns || []).map((pattern, i)=>(
                         <li key={i}>{pattern}</li>
@@ -532,23 +534,23 @@ export default function WikiAnalysis({
                   </>
                 ) : (
                   <>
-                    <p><strong>{personName || 'Анализируемый субъект'}</strong> — {insights.personality}</p>
+                    <p><strong>{personName || i18n.t('wiki.subject.default')}</strong> — {insights.personality}</p>
 
-                    <h1 id="psychological-profile">Психологический профиль</h1>
-                    <p>Комплексный анализ личностных характеристик, основанный на систематическом изучении текстовых данных.</p>
+                    <h1 id="psychological-profile">{i18n.t('wiki.section.psychological.title')}</h1>
+                    <p>{i18n.t('wiki.section.psychological.desc')}</p>
 
-                    <h2 id="traits">Черты личности</h2>
-                    <p>В ходе анализа были идентифицированы следующие доминирующие личностные характеристики:</p>
+                    <h2 id="traits">{i18n.t('wiki.section.traits.title')}</h2>
+                    <p>{i18n.t('wiki.section.traits.desc')}</p>
                     <ul>{(insights.personality_traits || []).map((t, i)=>(<li key={i}>{t}</li>))}</ul>
 
-                    <h2 id="communication">Коммуникативные особенности</h2>
+                    <h2 id="communication">{i18n.t('wiki.section.communication.alt')}</h2>
                     <p>{insights.communication_style}</p>
 
-                    <h2 id="relationships">Отношения с людьми</h2>
+                    <h2 id="relationships">{i18n.t('wiki.section.relationships.title')}</h2>
                     <p>{insights.relationship_patterns}</p>
 
-                    <h2 id="patterns">Поведенческие паттерны</h2>
-                    <p>Систематический анализ выявил следующие устойчивые модели поведения:</p>
+                    <h2 id="patterns">{i18n.t('wiki.section.patterns.title')}</h2>
+                    <p>{i18n.t('wiki.section.patterns.desc2')}</p>
                     <ul>
                       {(insights.main_patterns || []).map((pattern, i)=>(
                         <li key={i}>{pattern}</li>
@@ -556,19 +558,19 @@ export default function WikiAnalysis({
                     </ul>
 
                     <hr className="section-divider" />
-                    <h1 id="practical-implications">Что с этим делать</h1>
-                    <p>Конкретные рекомендации и области для личностного развития, основанные на проведенном психологическом анализе.</p>
+                    <h1 id="practical-implications">{i18n.t('wiki.section.practical.title')}</h1>
+                    <p>{i18n.t('wiki.section.practical.desc')}</p>
 
-                    <h2 id="growth">Зоны роста</h2>
-                    <p>Сферы личностного роста, требующие целенаправленного внимания:</p>
+                    <h2 id="growth">{i18n.t('wiki.section.growth.title')}</h2>
+                    <p>{i18n.t('wiki.growth.desc')}</p>
                     <ul>
                       {(insights.growth_areas || []).map((a, i)=>(
                         <li key={i}>{a}</li>
                       ))}
                     </ul>
 
-                    <h2 id="recommendations">Рекомендации</h2>
-                    <p>Конкретные предложения по личностному развитию:</p>
+                    <h2 id="recommendations">{i18n.t('wiki.section.advice.title')}</h2>
+                    <p>{i18n.t('wiki.recommendations.desc')}</p>
                     <ul>
                       {(insights.recommendations || []).map((r, i)=>(
                         <li key={i}>{r}</li>
@@ -577,31 +579,31 @@ export default function WikiAnalysis({
                   </>
                 )}
 
-                <h2>Методологические примечания</h2>
+                <h2>{i18n.t('wiki.methodology.title')}</h2>
                 <div className="references">
                   <ol>
-                    <li>Анализ проведен системой ЗЕРКАЛО с использованием современных методов психолингвистики</li>
-                    <li>Результаты основаны на систематическом изучении текстовых данных</li>
-                    <li>Для получения профессиональной психологической помощи рекомендуется обращение к квалифицированным специалистам</li>
-                    <li>Данные исследования носят информационный характер и не заменяют профессиональную диагностику</li>
+                    <li>{i18n.t('wiki.export.methodology.desc1')}</li>
+                    <li>{i18n.t('wiki.export.methodology.desc2')}</li>
+                    <li>{i18n.t('wiki.export.methodology.desc3')}</li>
+                    <li>{i18n.t('wiki.export.methodology.desc4')}</li>
                   </ol>
                 </div>
 
-                <h2>Связанные темы</h2>
+                <h2>{i18n.t('wiki.related.title')}</h2>
                 <ul>
-                  <li><a href="/">ЗЕРКАЛО — система психологического анализа</a></li>
-                  <li><a href="/mirror/export-guide/">Методика экспорта данных для анализа</a></li>
-                  <li><a href="#">Психолингвистический анализ</a></li>
-                  <li><a href="#">Методы изучения личности</a></li>
+                  <li><a href="/">{i18n.t('wiki.export.related.topic1')}</a></li>
+                  <li><a href="/mirror/export-guide/">{i18n.t('wiki.export.related.topic2')}</a></li>
+                  <li><a href="#">{i18n.t('wiki.export.related.topic3')}</a></li>
+                  <li><a href="#">{i18n.t('wiki.export.related.topic4')}</a></li>
                 </ul>
               </div>
 
               <div className="categories">
-                <strong>Категории:</strong>
-                <a href="#">Психологический анализ</a>
-                <a href="#">Изучение личности</a>
-                <a href="#">Психолингвистика</a>
-                <a href="#">ЗЕРКАЛО</a>
+                <strong>{i18n.t('wiki.categories.title')}</strong>
+                <a href="#">{i18n.t('wiki.categories.analysis')}</a>
+                <a href="#">{i18n.t('wiki.categories.personality')}</a>
+                <a href="#">{i18n.t('wiki.categories.psycholinguistics')}</a>
+                <a href="#">{i18n.t('wiki.categories.mirror')}</a>
                 <a href="#">{createdAt ? createdAt.getFullYear() : ''}</a>
               </div>
             </>
@@ -609,8 +611,8 @@ export default function WikiAnalysis({
 
           {status !== 'processing' && status !== 'error' && !(status==='completed' && insights) && (
             <div className="mw-message-box mw-message-box-error">
-              <strong>Данные недоступны</strong><br/>
-              Анализ не был завершен или данные отсутствуют в системе.
+              <strong>{i18n.t('wiki.error.unavailable.title')}</strong><br/>
+              {i18n.t('wiki.error.unavailable.desc')}
             </div>
           )}
         </div>

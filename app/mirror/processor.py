@@ -25,7 +25,7 @@ CHUNK_SIZE = 20000  # Process 20k messages per chunk
 log = logging.getLogger(__name__)
 
 
-async def call_gpt_api(chat_data: List[Dict[str, Any]], person_name: str) -> Dict[str, Any]:
+async def call_gpt_api(chat_data: List[Dict[str, Any]], person_name: str, language: str = 'ru') -> Dict[str, Any]:
     """Call GPT API to analyze patient data using structured output"""
     try:
         # Prepare the data for analysis
@@ -39,8 +39,9 @@ async def call_gpt_api(chat_data: List[Dict[str, Any]], person_name: str) -> Dic
                     {'sender': msg.get('sender', 'User'), 'text': msg.get('text', ''), 'date': msg.get('date', '')}
                 )
 
-        # Create the system prompt
-        system_prompt = """You are a brilliant, insightful, and slightly provocative psychologist who sees through people's facades. 
+        # Create the system prompt based on language
+        if language == 'en':
+            system_prompt = """You are a brilliant, insightful, and slightly provocative psychologist who sees through people's facades. 
 
 Your job is to provide a DEEP, BOLD, and HONEST psychological analysis that cuts through the surface and reveals what's really going on. Be insightful, be direct, be compassionate but don't sugarcoat.
 
@@ -62,14 +63,43 @@ For EVERY insight you provide, give:
 3. Specific examples or quotes that support your analysis
 4. How this pattern shows up in their behavior
 
-Be thorough, insightful, and provide deep psychological insights with abundant examples. Write everything in Russian and refer to the person in THIRD PERSON (using their name or pronouns он/она/они, never "you" or "I").
+Be thorough, insightful, and provide deep psychological insights with abundant examples. Write everything in English and refer to the person in THIRD PERSON (using their name or pronouns he/she/they, never "you" or "I").
 
 IMPORTANT FORMATTING: When providing lists, use ONLY clean text without numbers, bullets, or other formatting symbols. Just provide clean, descriptive text for each item.
 
 Don't be afraid to be bold and direct - this is about real psychological insight, not surface-level observations. But always back up your insights with concrete evidence from their communication."""
+        else:  # Russian (default)
+            system_prompt = """Вы - блестящий, проницательный и слегка провокационный психолог, который видит сквозь людские фасады.
 
-        # Create the user prompt
-        user_prompt = f"""Based on this data, provide a detailed analysis in the following JSON format:
+Ваша задача - предоставить ГЛУБОКИЙ, СМЕЛЫЙ и ЧЕСТНЫЙ психологический анализ, который проникает сквозь поверхность и раскрывает, что на самом деле происходит. Будьте проницательными, прямыми, сострадательными, но не приукрашивайте.
+
+ВАЖНО: Предоставляйте МНОГО конкретных примеров и подробных обоснований для ваших инсайтов. Не просто констатируйте выводы - объясняйте ПОЧЕМУ вы так думаете, приводите конкретные примеры из их общения и предоставляйте доказательства для ваших психологических наблюдений.
+
+Анализируйте их коммуникативные паттерны и предоставляйте всесторонние психологические инсайты, которые охватывают:
+- Их истинную личность под поверхностью (с конкретными примерами поведения)
+- Как они действительно общаются и что это раскрывает о них (с реальными фразами и паттернами)
+- Их эмоциональный ландшафт и что движет их поведением (с доказательствами из их слов)
+- Их танец отношений - как они соединяются и разъединяются (с конкретными примерами взаимодействий)
+- Их основные паттерны, триггеры и механизмы совладания (с подробными объяснениями)
+- Конкретные терапевтические цели и области роста (с четким обоснованием)
+- Практические, действенные рекомендации (с пошаговым руководством)
+- Реальные примеры того, как они говорят и ведут себя (с точными цитатами и ситуациями)
+
+Для КАЖДОГО инсайта, который вы предоставляете, давайте:
+1. Наблюдение/вывод
+2. ПОЧЕМУ вы так думаете (доказательства из их общения)
+3. Конкретные примеры или цитаты, которые поддерживают ваш анализ
+4. Как этот паттерн проявляется в их поведении
+
+Будьте тщательными, проницательными и предоставляйте глубокие психологические инсайты с обилием примеров. Пишите все на русском языке и обращайтесь к человеку в ТРЕТЬЕМ ЛИЦЕ (используя их имя или местоимения он/она/они, никогда "вы" или "я").
+
+ВАЖНОЕ ФОРМАТИРОВАНИЕ: При предоставлении списков используйте ТОЛЬКО чистый текст без номеров, маркеров или других символов форматирования. Просто предоставляйте чистый, описательный текст для каждого пункта.
+
+Не бойтесь быть смелыми и прямыми - это о реальном психологическом понимании, а не о поверхностных наблюдениях. Но всегда подкрепляйте ваши инсайты конкретными доказательствами из их общения."""
+
+        # Create the user prompt based on language
+        if language == 'en':
+            user_prompt = f"""Based on this data, provide a detailed analysis in the following JSON format:
 
 Person Name: {person_name}
 
@@ -89,6 +119,27 @@ CRITICAL REQUIREMENTS:
 Don't just describe what you see - dig deeper and tell me what's driving their behavior, what patterns they're stuck in, and what they need to work on. But ALWAYS back up your insights with concrete evidence from their actual communication.
 
 Be honest, be direct, be compassionate but real. This is about genuine psychological insight with solid evidence, not surface-level observations."""
+        else:  # Russian (default)
+            user_prompt = f"""На основе этих данных предоставьте подробный анализ в следующем JSON формате:
+
+Имя человека: {person_name}
+
+Сообщения чата:
+{chat_text}
+
+Дайте мне ГЛУБОКИЙ, ПРОНИЦАТЕЛЬНЫЙ и СМЕЛЫЙ психологический анализ, который раскрывает, что на самом деле происходит с этим человеком.
+
+КРИТИЧЕСКИЕ ТРЕБОВАНИЯ:
+- Предоставляйте МНОГО конкретных примеров и цитат из их общения
+- Объясняйте ПОЧЕМУ вы считаете каждый инсайт истинным (приводите доказательства)
+- Включайте подробные обоснования для ваших психологических наблюдений
+- Используйте реальные фразы и паттерны из их сообщений как доказательства
+- Приводите конкретные примеры того, как их паттерны проявляются в поведении
+- Предоставляйте пошаговое обоснование для ваших выводов
+
+Не просто описывайте то, что вы видите - копайте глубже и расскажите, что движет их поведением, в каких паттернах они застряли, и над чем им нужно работать. Но ВСЕГДА подкрепляйте ваши инсайты конкретными доказательствами из их реального общения.
+
+Будьте честными, прямыми, сострадательными, но реальными. Это о подлинном психологическом понимании с твердыми доказательствами, а не о поверхностных наблюдениях."""
 
         # Make the API call with structured output
         response = await client.chat.completions.create(
@@ -130,7 +181,12 @@ Be honest, be direct, be compassionate but real. This is about genuine psycholog
 
 
 async def call_gpt_api_timeline_period(
-    chat_data: List[Dict[str, Any]], person_name: str, period_name: str, start_date: str, end_date: str
+    chat_data: List[Dict[str, Any]],
+    person_name: str,
+    period_name: str,
+    start_date: str,
+    end_date: str,
+    language: str = 'ru',
 ) -> Dict[str, Any]:
     """Call GPT API to analyze a specific timeline period"""
     try:
@@ -373,7 +429,7 @@ def format_date_russian(date_str: str) -> str:
         return date_str
 
 
-async def get_gpt_period_names(chunks, person_name):
+async def get_gpt_period_names(chunks, person_name, language: str = 'ru'):
     """Ask GPT to generate meaningful names for time periods"""
     try:
         # Create a summary of each period for GPT to analyze
@@ -532,7 +588,9 @@ def create_time_chunks(chat_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return chunks
 
 
-async def process_patient_data(chat_data: List[Dict[str, Any]], person_name: str) -> Dict[str, Any]:
+async def process_patient_data(
+    chat_data: List[Dict[str, Any]], person_name: str, language: str = 'ru'
+) -> Dict[str, Any]:
     """Main function to process patient data and return insights"""
     try:
         log.info(f"Processing data for: {person_name}")
@@ -541,11 +599,11 @@ async def process_patient_data(chat_data: List[Dict[str, Any]], person_name: str
         # Check if this is a large file that needs timeline processing
         if len(chat_data) > LARGE_FILE_THRESHOLD:
             log.info("Large file detected, using timeline processing")
-            return await process_large_file_timeline(chat_data, person_name)
+            return await process_large_file_timeline(chat_data, person_name, language)
         else:
             # Use original processing for smaller files
             log.info("Using standard processing for smaller file")
-            result = await call_gpt_api(chat_data, person_name)
+            result = await call_gpt_api(chat_data, person_name, language)
 
             if 'error' in result:
                 log.info(f"Error in GPT analysis: {result['error']}")
@@ -560,7 +618,9 @@ async def process_patient_data(chat_data: List[Dict[str, Any]], person_name: str
         return {"error": f"Processing Error: {str(e)}"}
 
 
-async def process_large_file_timeline(chat_data: List[Dict[str, Any]], person_name: str) -> Dict[str, Any]:
+async def process_large_file_timeline(
+    chat_data: List[Dict[str, Any]], person_name: str, language: str = 'ru'
+) -> Dict[str, Any]:
     """Process large files using timeline analysis"""
     try:
         log.info("Starting timeline processing for large file")
@@ -571,7 +631,7 @@ async def process_large_file_timeline(chat_data: List[Dict[str, Any]], person_na
 
         # Get GPT-generated period names
         log.info("Getting GPT-generated period names")
-        gpt_period_names = await get_gpt_period_names(chunks, person_name)
+        gpt_period_names = await get_gpt_period_names(chunks, person_name, language)
 
         # Update chunks with GPT-generated names
         for i, chunk in enumerate(chunks):
@@ -585,7 +645,7 @@ async def process_large_file_timeline(chat_data: List[Dict[str, Any]], person_na
 
             # Call GPT for this period
             period_result = await call_gpt_api_timeline_period(
-                chunk['messages'], person_name, chunk['period_name'], chunk['start_date'], chunk['end_date']
+                chunk['messages'], person_name, chunk['period_name'], chunk['start_date'], chunk['end_date'], language
             )
 
             if 'error' in period_result:

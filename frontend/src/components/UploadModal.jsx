@@ -138,7 +138,8 @@ export default function UploadModal({ t, open, onClose, i18n }) {
           person_name: picked.join(', '), 
           interview:'', 
           chat: filtered, 
-          keypair: keypair // Send the generated keypair instead of password
+          keypair: keypair, // Send the generated keypair instead of password
+          language: i18n.lang // Add language parameter
         })
       });
       const json = await res.json();

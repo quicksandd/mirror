@@ -23,6 +23,7 @@ class MirrorAnalysis(models.Model):
     error_message = models.TextField(blank=True)
 
     person_name = models.CharField(max_length=255, blank=True, default='')
+    language = models.CharField(max_length=10, default='ru', help_text='Language for analysis output')
 
     keypair = models.JSONField(null=True, blank=True)
 

@@ -34,20 +34,21 @@ def serve_react_app(request, uuid=None):
             os.path.join(settings.BASE_DIR, 'static', 'frontend', 'index.html'),
             os.path.join(settings.BASE_DIR, 'staticfiles', 'frontend', 'index.html'),
         ]
-        
+
         react_app_path = None
         for path in possible_paths:
             if os.path.exists(path):
                 react_app_path = path
                 break
-        
+
         if react_app_path:
             with open(react_app_path, 'r', encoding='utf-8') as f:
                 content = f.read()
             return HttpResponse(content, content_type='text/html')
         else:
             # Fallback to a simple message if React app is not built
-            return HttpResponse("""
+            return HttpResponse(
+                """
             <!DOCTYPE html>
             <html>
             <head>
@@ -67,7 +68,11 @@ def serve_react_app(request, uuid=None):
                 </ul>
             </body>
             </html>
-            """.format(*possible_paths), content_type='text/html')
+            """.format(
+                    *possible_paths
+                ),
+                content_type='text/html',
+            )
     except Exception as e:
         log.error(f"Error serving React app: {e}")
         return HttpResponse(f"Error loading application: {str(e)}", status=500)
@@ -86,16 +91,17 @@ def process_data(request):
         person_name = data.get('person_name', 'Anonymous')
         chat_data = data.get('chat', [])
         keypair = data.get('keypair')
+        language = data.get('language', 'ru')  # Default to Russian
 
         if not keypair:
             log.error(f'no keypair provided, {keypair}')
             return JsonResponse({'status': 'error', 'message': 'Keypair is required'}, status=400)
 
         # Create analysis record
-        analysis = MirrorAnalysis.objects.create(person_name=person_name, keypair=keypair)
+        analysis = MirrorAnalysis.objects.create(person_name=person_name, keypair=keypair, language=language)
 
-        # Start processing thread with chat data and keypair
-        thread = threading.Thread(target=run_async_processing, args=(str(analysis.id), chat_data))
+        # Start processing thread with chat data, keypair, and language
+        thread = threading.Thread(target=run_async_processing, args=(str(analysis.id), chat_data, language))
         thread.daemon = True
         thread.start()
 
@@ -163,10 +169,10 @@ def insights_view(request, uuid):
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 
-def run_async_processing(analysis_id, chat_data):
+def run_async_processing(analysis_id, chat_data, language='ru'):
     """Run async processing in background thread"""
     try:
-        log.info(f"Starting async processing for {analysis_id}")
+        log.info(f"Starting async processing for {analysis_id} in language {language}")
         # Create new event loop for this thread
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
@@ -179,7 +185,7 @@ def run_async_processing(analysis_id, chat_data):
             if constants.DEV_DEBUG and False:
                 result = {'result': 'ok', 'text': 'smth'}
             else:
-                result = loop.run_until_complete(process_patient_data(chat_data, analysis.person_name))
+                result = loop.run_until_complete(process_patient_data(chat_data, analysis.person_name, language))
 
             log.info(f"Got response from openai for {analysis_id}")
 

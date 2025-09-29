@@ -3,12 +3,14 @@ import WikiAnalysis from './components/WikiAnalysis.jsx'
 import { getApiUrl } from './config.js'
 import { unwrapPrivateKey, decryptDataFromServer } from './utils/crypto.js'
 import { loadKeypairFromStorage, hasKeypairInStorage, saveKeypairToStorage } from './utils/storage.js'
+import { createI18n } from './i18n.js'
 import './styles/wiki.css'
 import './styles/insight.css'
 
 class Insight extends Component {
   constructor(props) {
     super(props)
+    this.i18n = createI18n()
     this.state = {
       data: null,
       loading: true,
@@ -129,7 +131,7 @@ class Insight extends Component {
         console.error('Stored keypair not found', storedKeypair)
         this.setState({ 
           passwordPrompt: true,
-          passwordError: 'Сохраненный ключ не найден. Введите пароль вручную.'
+          passwordError: this.i18n.t('password.error.storedNotFound')
         })
         return
       }
@@ -139,7 +141,7 @@ class Insight extends Component {
         console.error('Stored keypair sk is not Uint8Array:', storedKeypair.sk)
         this.setState({ 
           passwordPrompt: true,
-          passwordError: 'Сохраненный ключ поврежден. Введите пароль вручную.'
+          passwordError: this.i18n.t('password.error.storedCorrupted')
         })
         return
       }
@@ -149,7 +151,7 @@ class Insight extends Component {
         console.error('No insights data to decrypt')
         this.setState({ 
           passwordPrompt: true,
-          passwordError: 'Данные для расшифровки недоступны'
+          passwordError: this.i18n.t('password.error.decryptData')
         })
         return
       }
@@ -173,7 +175,7 @@ class Insight extends Component {
       console.error('Auto-decryption error:', err)
       this.setState({ 
         passwordPrompt: true,
-        passwordError: 'Ошибка автоматической расшифровки. Введите пароль вручную.',
+        passwordError: this.i18n.t('password.error.autoDecrypt'),
         decrypting: false
       })
     }
@@ -183,12 +185,12 @@ class Insight extends Component {
     const { password, data } = this.state
     
     if (!password.trim()) {
-      this.setState({ passwordError: 'Пожалуйста, введите пароль' })
+      this.setState({ passwordError: this.i18n.t('password.error.required') })
       return
     }
     
     if (!data || !data.keypair) {
-      this.setState({ passwordError: 'Данные для расшифровки недоступны' })
+      this.setState({ passwordError: this.i18n.t('password.error.unavailable') })
       return
     }
     
@@ -223,7 +225,7 @@ class Insight extends Component {
       })
     } catch (err) {
       console.error('Decryption error:', err)
-      this.setState({ passwordError: 'Неверный пароль или ошибка расшифровки' })
+      this.setState({ passwordError: this.i18n.t('password.error.wrong') })
     } finally {
       this.setState({ decrypting: false })
     }
@@ -271,17 +273,17 @@ class Insight extends Component {
         <div className="insight-password-container">
           <div className="insight-password-card">
             <h2 className="insight-password-title">
-              {hasStoredKeypair ? 'Автоматическая расшифровка...' : 'Введите пароль для доступа'}
+              {hasStoredKeypair ? this.i18n.t('password.autoDecrypt') : this.i18n.t('password.title')}
             </h2>
             <p className="insight-password-description">
               {hasStoredKeypair 
-                ? 'Используется сохраненный ключ для автоматической расшифровки'
-                : 'Для просмотра анализа необходимо ввести пароль'
+                ? this.i18n.t('password.autoDescription')
+                : this.i18n.t('password.description')
               }
             </p>
             {!data && (
               <p style={{color: 'orange', textAlign: 'center', marginBottom: '20px'}}>
-                Загрузка данных...
+                {this.i18n.t('password.loading')}
               </p>
             )}
             
@@ -293,7 +295,7 @@ class Insight extends Component {
                     type="password"
                     value={password}
                     onChange={this.handlePasswordChange}
-                    placeholder="Введите пароль"
+                    placeholder={this.i18n.t('password.placeholder')}
                     className="insight-password-input"
                     disabled={decrypting}
                     onKeyPress={this.handleKeyPress}
@@ -310,7 +312,7 @@ class Insight extends Component {
                     className="insight-password-cancel-btn"
                     disabled={decrypting}
                   >
-                    Отмена
+                    {this.i18n.t('password.cancel')}
                   </button>
                   <button
                     onClick={this.handlePasswordSubmit}
@@ -320,10 +322,10 @@ class Insight extends Component {
                     {decrypting ? (
                       <>
                         <span className="insight-spinner"></span>
-                        Расшифровка...
+                        {this.i18n.t('password.decrypting')}
                       </>
                     ) : (
-                      'Продолжить'
+                      this.i18n.t('password.continue')
                     )}
                   </button>
                 </div>
@@ -335,7 +337,7 @@ class Insight extends Component {
                 <div className="insight-decrypting-content">
                   <div className="insight-decrypting-spinner"></div>
                   <div className="insight-decrypting-text">
-                    Расшифровка данных...
+                    {this.i18n.t('password.decryptingData')}
                   </div>
                 </div>
               </div>
@@ -348,7 +350,7 @@ class Insight extends Component {
     if (loading) {
       return (
         <div className="insight-loading-container">
-          Загрузка анализа...
+          {this.i18n.t('loading.analysis')}
         </div>
       )
     }
@@ -356,10 +358,10 @@ class Insight extends Component {
     if (error) {
       return (
         <div className="insight-error-container">
-          <h2>Ошибка загрузки</h2>
+          <h2>{this.i18n.t('error.loading')}</h2>
           <p className="insight-error-message">{error}</p>
           <button onClick={() => window.location.reload()}>
-            Попробовать снова
+            {this.i18n.t('error.retry')}
           </button>
         </div>
       )
@@ -368,7 +370,7 @@ class Insight extends Component {
     if (!data) {
       return (
         <div className="insight-no-data-container">
-          Данные не найдены
+          {this.i18n.t('data.notFound')}
         </div>
       )
     }
@@ -379,8 +381,8 @@ class Insight extends Component {
         <div className="insight-loading-container">
           <div className="insight-processing-content">
             <div className="insight-processing-spinner"></div>
-            <h2>Анализ в процессе...</h2>
-            <p>Пожалуйста, подождите, пока анализ будет завершен. Это может занять несколько минут.</p>
+            <h2>{this.i18n.t('processing.title')}</h2>
+            <p>{this.i18n.t('processing.subtitle')}</p>
             {isAutoRetrying && (
               <div style={{ 
                 marginTop: '20px', 
@@ -390,10 +392,10 @@ class Insight extends Component {
                 border: '1px solid #2196f3'
               }}>
                 <p style={{ margin: '0 0 5px 0', color: '#1976d2', fontWeight: 'bold' }}>
-                  🔄 Автоматическое обновление активно
+                  {this.i18n.t('processing.autoRetry')}
                 </p>
                 <p style={{ margin: '0', color: '#666', fontSize: '14px' }}>
-                  Попыток обновления: {retryCount} | Следующее обновление через 10 секунд
+                  {this.i18n.t('processing.retryInfo').replace('{count}', retryCount)}
                 </p>
               </div>
             )}
@@ -402,7 +404,7 @@ class Insight extends Component {
               onClick={() => window.location.reload()} 
               style={{ marginTop: '10px' }}
             >
-              Обновить страницу
+              {this.i18n.t('processing.refresh')}
             </button>
           </div>
         </div>
@@ -412,12 +414,12 @@ class Insight extends Component {
     if (data.status === 'error') {
       return (
         <div className="insight-error-container">
-          <h2>Ошибка анализа</h2>
+          <h2>{this.i18n.t('processing.error.title')}</h2>
           <p className="insight-error-message">
-            {data.error_message || 'Произошла ошибка при обработке анализа'}
+            {data.error_message || this.i18n.t('processing.error.message')}
           </p>
           <button onClick={() => window.location.reload()}>
-            Попробовать снова
+            {this.i18n.t('processing.retry')}
           </button>
         </div>
       )
@@ -429,8 +431,8 @@ class Insight extends Component {
         <div className="insight-loading-container">
           <div className="insight-processing-content">
             <div className="insight-processing-spinner"></div>
-            <h2>Ожидание завершения анализа...</h2>
-            <p>Статус: {data.status}</p>
+            <h2>{this.i18n.t('processing.waiting')}</h2>
+            <p>{this.i18n.t('processing.status').replace('{status}', data.status)}</p>
             {isAutoRetrying && (
               <div style={{ 
                 marginTop: '20px', 
@@ -440,10 +442,10 @@ class Insight extends Component {
                 border: '1px solid #2196f3'
               }}>
                 <p style={{ margin: '0 0 5px 0', color: '#1976d2', fontWeight: 'bold' }}>
-                  🔄 Автоматическое обновление активно
+                  {this.i18n.t('processing.autoRetry')}
                 </p>
                 <p style={{ margin: '0', color: '#666', fontSize: '14px' }}>
-                  Попыток обновления: {retryCount} | Следующее обновление через 10 секунд
+                  {this.i18n.t('processing.retryInfo').replace('{count}', retryCount)}
                 </p>
               </div>
             )}
@@ -459,7 +461,7 @@ class Insight extends Component {
                 cursor: 'pointer'
               }}
             >
-              Обновить страницу
+              {this.i18n.t('processing.refresh')}
             </button>
           </div>
         </div>
@@ -470,7 +472,7 @@ class Insight extends Component {
       <WikiAnalysis
         status={data.status}
         analysis={{ 
-          person_name: data.person_name || 'Ваше Зеркало',
+          person_name: data.person_name || this.i18n.t('analysis.defaultName'),
           created_at: data.created_at 
         }}
         insights={decryptedInsights}
