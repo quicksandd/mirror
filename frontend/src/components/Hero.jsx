@@ -40,7 +40,7 @@ export default function Hero({ t, onOpen }) {
                         <div className="arrow-head"></div>
                     </div>
                     
-                    <img className="wikishot" id="hero-wiki-img" src={getUiAssetUrl("WikiExample.png")} alt={t("hero.wiki.alt")} />
+                    <img className="wikishot" id="hero-wiki-img" src={getUiAssetUrl("WikiExampleEng.png")} alt={t("hero.wiki.alt")} />
                 </div>
             </div>
         </section>
