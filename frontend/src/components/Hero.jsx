@@ -25,6 +25,21 @@ export default function Hero({ t, onOpen }) {
                     <div className="chatcard">
                         <img id="hero-chat-img" src={getUiAssetUrl("MessagesExample.png")} alt={t("hero.chat.alt")} />
                     </div>
+                    
+                    {/* Arrow 1: From chat to middle */}
+                    <div className="arrow-container arrow-1">
+                        <div className="arrow-line"></div>
+                        <div className="arrow-text">{t("hero.arrow1")}</div>
+                        <div className="arrow-head"></div>
+                    </div>
+                    
+                    {/* Arrow 2: From middle to wiki */}
+                    <div className="arrow-container arrow-2">
+                        <div className="arrow-line"></div>
+                        <div className="arrow-text">{t("hero.arrow2")}</div>
+                        <div className="arrow-head"></div>
+                    </div>
+                    
                     <img className="wikishot" id="hero-wiki-img" src={getUiAssetUrl("WikiExample.png")} alt={t("hero.wiki.alt")} />
                 </div>
             </div>
